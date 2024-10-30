@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liste des Compétences</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Icônes -->
+  <link rel="stylesheet" href="/css/styles.css"> <!-- Lien vers votre fichier CSS global -->
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4">Liste des Compétences</h1>
+    <a href="/addcompetence" class="btn btn-primary mb-1">Ajouter une Compétence</a>
+    <a href="/" class="btn btn-secondary mb-1">Retour</a>
+
+    <!-- Barre de recherche -->
+    <input type="text" id="searchInput" class="form-control mb-3" placeholder="Rechercher une compétence...">
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th onclick="sortTable(0)" style="cursor: pointer;">ID <i class="fas fa-sort"></i></th>
+          <th onclick="sortTable(1)" style="cursor: pointer;">Nom <i class="fas fa-sort"></i></th>
+          <th onclick="sortTable(2)" style="cursor: pointer;">Domaine Associé <i class="fas fa-sort"></i></th>
+        </tr>
+      </thead>
+      <tbody id="competenceTableBody">
+        <% competences.forEach(competence => { %>
+          <tr>
+            <td><%= competence.id %></td>
+            <td><%= competence.nom %></td>
+            <td><%= competence.domaine_nom %></td>
+            <td>
+              <!-- Formulaire pour supprimer une competence -->
+              <form action="/deletecompetence/<%= competence.id %>" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette competence ?');">
+                  <button type="submit" class="btn btn-danger">Supprimer</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Scripts JS de Bootstrap -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <!-- Script de recherche et de tri -->
+  <script>
+      let sortDirection = {}; // Garde une trace de la direction de tri
+
+      function sortTable(columnIndex) {
+          const table = document.querySelector('.table tbody');
+          const rows = Array.from(table.rows);
+          const direction = sortDirection[columnIndex] || 'asc'; // Direction actuelle ou 'asc' par défaut
+          
+          // Tri en fonction de la direction actuelle
+          const sortedRows = rows.sort((a, b) => {
+              const aText = a.cells[columnIndex].textContent.toLowerCase();
+              const bText = b.cells[columnIndex].textContent.toLowerCase();
+
+              if (direction === 'asc') {
+                  return aText.localeCompare(bText);
+              } else {
+                  return bText.localeCompare(aText);
+              }
+          });
+
+          // Mise à jour de la direction de tri
+          sortDirection[columnIndex] = direction === 'asc' ? 'desc' : 'asc';
+
+          // Mise à jour des icônes de tri
+          updateSortIcons(columnIndex, sortDirection[columnIndex]);
+
+          // Re-attache les lignes triées au tableau
+          table.innerHTML = '';
+          sortedRows.forEach(row => table.appendChild(row));
+      }
+
+      // Fonction pour mettre à jour les icônes de tri
+      function updateSortIcons(columnIndex, direction) {
+          const headers = document.querySelectorAll('th i'); // Toutes les icônes de tri
+
+          headers.forEach((icon, index) => {
+              if (index === columnIndex) {
+                  // Met à jour l'icône de la colonne triée
+                  icon.className = direction === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down';
+              } else {
+                  // Réinitialise les autres icônes
+                  icon.className = 'fas fa-sort';
+              }
+          });
+      }
+
+      // Fonction de recherche
+      document.getElementById('searchInput').addEventListener('keyup', function() {
+          const searchValue = this.value.toLowerCase();
+          const rows = document.querySelectorAll('#competenceTableBody tr');
+          
+          rows.forEach(row => {
+              const columns = row.querySelectorAll('td');
+              const id = columns[0].textContent.toLowerCase();
+              const name = columns[1].textContent.toLowerCase();
+              const domaine = columns[2].textContent.toLowerCase();
+
+              if (id.includes(searchValue) || name.includes(searchValue) || domaine.includes(searchValue)) {
+                  row.style.display = '';
+              } else {
+                  row.style.display = 'none';
+              }
+          });
+      });
+  </script>
+</body>
+</html>

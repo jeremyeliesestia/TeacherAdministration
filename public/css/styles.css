@@ -1,0 +1,148 @@
+/* Appliquer le fond au body */
+body {
+    /* Dégradé de couleurs superposé à l'image */
+    background: linear-gradient(
+                    45deg,                    /* Angle du dégradé */
+                    rgba(0, 14, 171, 0.5),    /* Couleur de départ (bleu semi-transparent) */
+                    rgba(136, 13, 185, 0.5),  /* Couleur intermédiaire */
+                    rgba(255, 123, 0, 0.5)    /* Couleur de fin (orange semi-transparent) */
+                ),
+                url('https://source.unsplash.com/random/1920x1080');  /* Image de fond aléatoire */
+    
+    /* S'assurer que l'image couvre toute la page */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed; /* Fixe l'arrière-plan lors du défilement */
+    min-height: 100vh; /* S'assure que le body prend toute la hauteur de la page visible */
+    margin: 0; /* Supprime les marges par défaut */
+    color: white; /* Couleur du texte sur le fond pour la lisibilité */
+}
+
+/* Conteneur principal qui utilise Flexbox pour séparer les sections */
+.page-container {
+    display: flex;                 /* Flexbox pour aligner les deux sections en ligne */
+    min-height: 100vh;             /* La page prend toute la hauteur de l'écran visible */
+    width: 100%;                   /* Occupe toute la largeur */
+}
+
+/* Partie gauche (H1) */
+.left-section {
+    flex: 1;                       /* La partie gauche prend 50% de la largeur */
+    display: flex;
+    align-items: center;           /* Centrer verticalement */
+    justify-content: center;       /* Centrer horizontalement le texte */
+    background-color: rgba(0, 0, 0, 0.25); /* Fond semi-transparent */
+    padding: 20px;
+}
+  
+/* Partie droite (h2 et boutons) */
+.right-section {
+    flex: 1;                       /* La partie droite prend 50% de la largeur */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;       /* Centrer verticalement les éléments */
+    padding: 20px;
+    color: white;                  /* Texte en blanc pour la lisibilité */
+}
+
+/* Mise en forme du texte */
+h1 {
+    font-size: 5rem;               /* Texte H1 plus grand */
+    text-align: left;
+    font-weight: bold;
+}
+
+h2 {
+    text-align: left;              /* Alignement à gauche des H2 */
+}
+
+.btn-group-vertical a {
+    margin-bottom: 10px; /* Ajustez la valeur selon vos préférences */
+}
+
+.btn {
+    border-radius: 25px;
+    margin-bottom: 10px;
+    color: white; /* Assurez-vous que le texte des boutons soit blanc */
+}
+
+/* Styles pour les niveaux de compétence */
+.competence-VERT-FONCE {
+    background-color: #006400; /* VERT FONCÉ */
+    color: white;
+}
+.competence-VERT {
+    background-color: #00FF00; /* VERT */
+    color: black;
+}
+.competence-ORANGE {
+    background-color: #FFA500; /* ORANGE */
+    color: black;
+}
+.competence-ROUGE {
+    background-color: #FF0000; /* ROUGE */
+    color: white;
+}
+.competence-GRIS {
+    background-color: #808080; /* GRIS */
+    color: white;
+}
+.competence-none {
+    background-color: white; /* Pas de compétence */
+}
+
+/* Spécifique à certains conteneurs de texte (optionnel, selon vos besoins) */
+h1, h2, h3, p, a, span, div {
+    color: white; /* Tous les textes seront en blanc */
+}
+
+/* Si vous avez des boutons ou liens spécifiques avec d'autres couleurs, vous pouvez les ajuster */
+.btn {
+    color: white; /* Assurez-vous que les boutons aient également un texte blanc */
+}
+
+/* Si vous utilisez des liens et que vous voulez qu'ils apparaissent en blanc aussi */
+a {
+    color: white;
+    text-decoration: none; /* Facultatif : pour retirer le soulignement sur les liens */
+}
+
+a:hover {
+    color: #ccc; /* Facultatif : une couleur différente lorsque le lien est survolé */
+}
+
+/* Tout autre texte spécifique, exemple pour les paragraphes, etc. */
+p {
+    color: white;
+}
+
+/* Style pour les tables - couleur du texte en blanc */
+table, th, td {
+    color: white; /* Le texte de toutes les cellules du tableau sera blanc */
+}
+
+/* Si vous utilisez des bordures de tableau, vous pouvez aussi les ajuster pour une meilleure lisibilité */
+table {
+    border-color: white; /* Bordure blanche pour les tables */
+}
+
+/* Éventuellement ajuster le fond des lignes pour un contraste */
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.1); /* Couleur de fond des lignes impaires, légèrement transparent */
+}
+
+.table-striped tbody tr:nth-of-type(even) {
+    background-color: rgba(255, 255, 255, 0.2); /* Couleur de fond des lignes paires, légèrement plus foncé */
+}
+
+/* Style pour les boutons du tableau */
+.btn-danger {
+    color: white; /* Texte du bouton en blanc */
+}
+
+/* Pour les en-têtes de colonnes avec tri */
+th i {
+    color: white; /* Couleur des icônes de tri en blanc */
+}
+

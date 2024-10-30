@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page d'Accueil</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/styles.css"> <!-- Lien vers votre fichier CSS global -->
+</head>
+<body>
+  
+  <!-- Conteneur principal avec Flexbox pour séparer la page en deux parties -->
+  <div class="page-container">
+    
+    <!-- Partie gauche : Texte H1 -->
+    <div class="left-section">
+      <h1>GESTION DES ELEVES ET DES COMPETENCES</h1>
+    </div>
+    
+    <!-- Partie droite : Les boutons avec les h2 -->
+    <div class="right-section">
+      
+      <!-- Section de gestion des cours -->
+      <div class="container mt-5">
+        <h2 class="mb-4">Gestion des cours</h2>
+        <div class="btn-group-vertical">
+            <a href="/students" class="btn btn-primary">Gérer les Étudiants</a>
+        </div>
+        <div class="btn-group-vertical">
+            <a href="/matiere" class="btn btn-primary">Gérer les Matières</a>
+        </div>
+        <div class="btn-group-vertical">
+            <a href="/domaine" class="btn btn-primary">Gérer les Domaines</a>
+        </div>
+        <div class="btn-group-vertical">
+            <a href="/competence" class="btn btn-primary">Gérer les Compétences</a>
+        </div>
+      </div>
+      
+      <!-- Section d'attribution des notes -->
+      <div class="container mt-5">
+        <h2 class="mb-4">Attribution des notes</h2>
+        <div class="btn-group-vertical">
+            <a href="/assigncompetences" class="btn btn-primary">Ajouter une note</a>
+        </div>
+        <div class="btn-group-vertical">
+          <a href="/notespareleve" class="btn btn-primary">Notes par élève</a>
+        </div>
+      </div>
+      
+    </div> <!-- Fin de la section droite -->
+    
+  </div> <!-- Fin du conteneur principal -->
+
+  <!-- Scripts JS de Bootstrap -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

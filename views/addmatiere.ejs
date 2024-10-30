@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ajouter une Matière</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/styles.css"> <!-- Lien vers votre fichier CSS global -->
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4">Ajouter une Matière</h1>
+    
+    <form action="/addmatiere" method="POST" class="mb-4">
+      <button type="submit" class="btn btn-success mb-1">Ajouter la Matière</button>
+      <a href="/matiere" class="btn btn-secondary mb-1">Retour</a>
+      <div class="form-group">
+        <label for="nom">Nom :</label>
+        <input type="text" id="nom" name="nom" class="form-control" required>
+      </div>
+    </form>
+  </div>
+
+  <!-- Scripts JS de Bootstrap -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

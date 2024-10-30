@@ -1,0 +1,108 @@
+<!DOCTYPE html> 
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assigner des Compétences</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/styles.css"> <!-- Lien vers votre fichier CSS global -->
+  <style>
+    option[data-color="VERT-FONCE"] { background-color: #006400; color: white; }
+    option[data-color="VERT"] { background-color: #00FF00; color: black; }
+    option[data-color="ORANGE"] { background-color: #FFA500; color: black; }
+    option[data-color="ROUGE"] { background-color: #FF0000; color: white; }
+    option[data-color="GRIS"] { background-color: #808080; color: white; }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4">Assigner des Compétences à un Étudiant</h1>
+
+    <form action="/assigncompetences" method="POST">
+      <button type="submit" class="btn btn-primary">Assigner les compétences</button>
+      <a href="/" class="btn btn-secondary">Retour à l'accueil</a>
+      <div class="form-group">
+        <label for="student">Sélectionner un étudiant :</label>
+        <select name="student_id" id="student" class="form-control" required>
+          <% students.forEach(student => { %>
+            <option value="<%= student.id %>"><%= student.name %> <%= student.fullname %> (Classe: <%= student.classe %>)</option>
+          <% }); %>
+        </select>
+      </div>
+
+      <!-- Tableau pour afficher les compétences -->
+      <div class="form-group">
+        <label for="competence">Sélectionner des compétences :</label>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Selection</th>
+              <th>Matière</th>
+              <th>Domaine</th>
+              <th>Compétence</th>
+              <th>Niveau</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% competences.forEach(competence => { %>
+              <tr>
+                <td>
+                  <input type="checkbox" name="competence_ids[]" value="<%= competence.competence_id %>">
+                </td>
+                <td><%= competence.matiere_nom %></td>
+                <td><%= competence.domaine_nom %></td>
+                <td><%= competence.competence_nom %></td>
+                <td>
+                  <select name="competence_levels[]" class="form-control color-select" onchange="changeColor(this)">
+                    <option value="" disabled selected> </option>
+                    <option value="VERT-FONCE" data-color="VERT-FONCE">VERT FONCÉ</option>
+                    <option value="VERT" data-color="VERT">VERT</option>
+                    <option value="ORANGE" data-color="ORANGE">ORANGE</option>
+                    <option value="ROUGE" data-color="ROUGE">ROUGE</option>
+                    <option value="GRIS" data-color="GRIS">GRIS</option>
+                  </select>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </form>
+
+  </div>
+
+  <!-- Scripts JS -->
+  <script>
+    function changeColor(selectElement) {
+      const selectedOption = selectElement.options[selectElement.selectedIndex];
+      const color = selectedOption.getAttribute('data-color');
+
+      switch(color) {
+        case 'VERT-FONCE':
+          selectElement.style.backgroundColor = '#006400';
+          selectElement.style.color = 'white';
+          break;
+        case 'VERT':
+          selectElement.style.backgroundColor = '#00FF00';
+          selectElement.style.color = 'black';
+          break;
+        case 'ORANGE':
+          selectElement.style.backgroundColor = '#FFA500';
+          selectElement.style.color = 'black';
+          break;
+        case 'ROUGE':
+          selectElement.style.backgroundColor = '#FF0000';
+          selectElement.style.color = 'white';
+          break;
+        case 'GRIS':
+          selectElement.style.backgroundColor = '#808080';
+          selectElement.style.color = 'white';
+          break;
+        default:
+          selectElement.style.backgroundColor = 'white';
+          selectElement.style.color = 'black';
+      }
+    }
+  </script>
+</body>
+</html>

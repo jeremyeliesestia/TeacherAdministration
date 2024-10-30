@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes par Élève</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Icônes -->
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        /* Styles pour le tableau et les couleurs */
+        .niveau-color {
+            padding: 5px;
+            color: white; /* Texte blanc par défaut */
+            border-radius: 4px;
+        }
+        .VERT-FONCE { background-color: #006400; }
+        .VERT { background-color: #00FF00; }
+        .ORANGE { background-color: #FFA500; }
+        .ROUGE { background-color: #FF0000; }
+        .GRIS { background-color: #808080; }
+        .sortable:hover { cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Notes par Élève</h1>
+
+        <!-- Liste déroulante pour sélectionner un étudiant -->
+        <form id="student-form" action="/getCompetencesByStudent" method="POST">
+            <div class="form-group">
+                <label for="student">Sélectionner un étudiant :</label>
+                <select name="student_id" id="student" class="form-control" required onchange="document.getElementById('student-form').submit();">
+                    <option value="" disabled selected>Choisissez un étudiant</option>
+                    <% students.forEach(student => { %>
+                        <option value="<%= student.id %>" <%= selectedStudent == student.id ? 'selected' : '' %>><%= student.fullname %> (<%= student.classe %>)</option>
+                    <% }); %>
+                </select>
+            </div>
+        </form>
+
+        <!-- Bouton pour exporter le tableau en PDF -->
+        <% if (selectedStudent) { %>
+        <form action="/exportPdf" method="POST" style="display: inline;">
+            <input type="hidden" name="student_id" value="<%= selectedStudent %>">
+            <button type="submit" class="btn btn-primary mb-3">Exporter en PDF</button>
+        </form>
+        <% } %>
+
+        <!-- Bouton de retour à l'accueil -->
+        <a href="/" class="btn btn-secondary mb-3">Retour à l'accueil</a>
+
+        <!-- Tableau pour afficher les compétences -->
+        <div id="competence-table" class="mt-4">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)" style="cursor: pointer;">Matière <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable(1)" style="cursor: pointer;">Domaine <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable(2)" style="cursor: pointer;">Compétence <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable(3)" style="cursor: pointer;">Niveau <i class="fas fa-sort"></i></th>
+                    </tr>
+                </thead>
+                <tbody id="notesTableBody">
+                    <% if (competences.length > 0) { %>
+                        <% competences.forEach(comp => { %>
+                            <tr>
+                                <td><%= comp.matiere %></td>
+                                <td><%= comp.domaine %></td>
+                                <td><%= comp.competence %></td>
+                                <td class="niveau-color <%= comp.niveau_color %>"></td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="4" class="text-center">Aucune compétence trouvée pour cet élève.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Scripts JS de Bootstrap -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Script de tri -->
+    <script>
+        let sortDirection = {}; // Garde une trace de la direction de tri
+
+        function sortTable(columnIndex) {
+            const table = document.querySelector('.table tbody');
+            const rows = Array.from(table.rows);
+            const direction = sortDirection[columnIndex] || 'asc'; // Direction actuelle ou 'asc' par défaut
+            
+            // Tri en fonction de la direction actuelle
+            const sortedRows = rows.sort((a, b) => {
+                const aText = a.cells[columnIndex].textContent.toLowerCase();
+                const bText = b.cells[columnIndex].textContent.toLowerCase();
+
+                if (direction === 'asc') {
+                    return aText.localeCompare(bText);
+                } else {
+                    return bText.localeCompare(aText);
+                }
+            });
+
+            // Mise à jour de la direction de tri
+            sortDirection[columnIndex] = direction === 'asc' ? 'desc' : 'asc';
+
+            // Mise à jour des icônes de tri
+            updateSortIcons(columnIndex, sortDirection[columnIndex]);
+
+            // Re-attache les lignes triées au tableau
+            table.innerHTML = '';
+            sortedRows.forEach(row => table.appendChild(row));
+        }
+
+        // Fonction pour mettre à jour les icônes de tri
+        function updateSortIcons(columnIndex, direction) {
+            const headers = document.querySelectorAll('th i'); // Toutes les icônes de tri
+
+            headers.forEach((icon, index) => {
+                if (index === columnIndex) {
+                    // Met à jour l'icône de la colonne triée
+                    icon.className = direction === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down';
+                } else {
+                    // Réinitialise les autres icônes
+                    icon.className = 'fas fa-sort';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
