@@ -11,9 +11,12 @@
   <div class="container mt-5">
     <h1 class="mb-4">Ajouter une Matière</h1>
     
-    <form action="/addmatiere" method="POST" class="mb-4">
-      <button type="submit" class="btn btn-success mb-1">Ajouter la Matière</button>
-      <a href="/matiere" class="btn btn-secondary mb-1">Retour</a>
+    <form action="/addmatiere" method="POST" class="mb-4 form-input">
+      <!-- Boutons -->
+      <div class="btn-group-vertical">
+        <button type="submit" class="btn-grad">Ajouter la Matière</button>
+        <a href="/matiere" class="btn-grad">Retour</a>
+      </div>
       <div class="form-group">
         <label for="nom">Nom :</label>
         <input type="text" id="nom" name="nom" class="form-control" required>

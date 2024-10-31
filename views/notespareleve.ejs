@@ -43,12 +43,12 @@
         <% if (selectedStudent) { %>
         <form action="/exportPdf" method="POST" style="display: inline;">
             <input type="hidden" name="student_id" value="<%= selectedStudent %>">
-            <button type="submit" class="btn btn-primary mb-3">Exporter en PDF</button>
+            <button type="submit" class="btn-grad">Exporter en PDF</button>
         </form>
         <% } %>
 
         <!-- Bouton de retour à l'accueil -->
-        <a href="/" class="btn btn-secondary mb-3">Retour à l'accueil</a>
+        <a href="/" class="btn-grad">Retour à l'accueil</a>
 
         <!-- Tableau pour afficher les compétences -->
         <div id="competence-table" class="mt-4">

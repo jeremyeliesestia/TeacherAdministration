@@ -11,9 +11,12 @@
   <div class="container mt-5">
     <h1 class="mb-4">Ajouter un Domaine</h1>
     
-    <form action="/adddomaine" method="POST" class="mb-4">
-      <button type="submit" class="btn btn-success mb-1">Ajouter le Domaine</button>
-      <a href="/domaine" class="btn btn-secondary mb-1">Retour</a>
+    <form action="/adddomaine" method="POST" class="mb-4 form-input">
+      <!-- Boutons -->
+      <div class="btn-group-vertical">
+        <button type="submit" class="btn-grad">Ajouter le Domaine</button>
+        <a href="/domaine" class="btn-grad">Retour</a>
+      </div>
         <div class="form-group">
             <label for="matiere_id">Matière :</label>
             <select id="matiere_id" name="matiere_id" class="form-control" required>

@@ -11,9 +11,13 @@
   <div class="container mt-5">
     <h1 class="mb-4">Ajouter un Étudiant</h1>
     
-    <form action="/addstudent" method="POST" class="mb-4">
-      <button type="submit" class="btn btn-success mb-1">Ajouter l'Étudiant</button>
-      <a href="/" class="btn btn-secondary mb-1">Retour</a>
+    <form action="/addstudent" method="POST" class="mb-4 form-input">
+      <!-- Boutons -->
+      <div class="btn-group-vertical">
+        <button type="submit" class="btn-grad">Ajouter l'Étudiant</button>
+        <a href="/" class="btn-grad">Retour</a>
+      </div>
+
       <div class="form-group">
         <label for="name">Nom :</label>
         <input type="text" id="name" name="name" class="form-control" required>

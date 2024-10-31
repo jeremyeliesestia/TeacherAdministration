@@ -382,7 +382,7 @@ app.post('/exportPdf', async (req, res) => {
     doc.pipe(res);
 
     // Étape 4: Ajouter le nom et le prénom de l'étudiant en haut du document
-    doc.fontSize(16).text(`Fiche de Compétences`, { align: 'center' });
+    doc.fontSize(16).text(`Bilan du trimestre`, { align: 'center' });
     doc.fontSize(12).text(`${studentInfo.name} ${studentInfo.fullname}`, { align: 'center' });
 
     // Étape 5: Grouper les compétences par matière
