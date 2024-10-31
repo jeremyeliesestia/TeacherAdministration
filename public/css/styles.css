@@ -58,14 +58,40 @@ h2 {
 }
 
 .btn-group-vertical a {
-    margin-bottom: 10px; /* Ajustez la valeur selon vos préférences */
+    margin-bottom: 25px; /* Ajustez la valeur selon vos préférences */
 }
 
 .btn {
     border-radius: 25px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     color: white; /* Assurez-vous que le texte des boutons soit blanc */
 }
+
+.btn {
+    border-radius: 25px;
+    margin-bottom: 20px;
+    color: white; /* Assurez-vous que le texte des boutons soit blanc */
+}
+
+.btn-grad {
+    background-image: linear-gradient(to right, rgb(185, 9, 255) 0%, rgb(255, 181, 112) 100%);
+    width: 200px;
+    padding: 10px 20px;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 15px;
+    transition: 0.5s;
+    background-size: 100% auto;
+    color: white;
+    border-radius: 1000px;
+    display: block;
+}
+
+.btn-grad:hover {
+    box-shadow: 0 0 15px rgba(255, 255, 255);
+    color: #fff; text-decoration: none; 
+}
+
 
 /* Styles pour les niveaux de compétence */
 .competence-VERT-FONCE {
@@ -95,11 +121,6 @@ h2 {
 /* Spécifique à certains conteneurs de texte (optionnel, selon vos besoins) */
 h1, h2, h3, p, a, span, div {
     color: white; /* Tous les textes seront en blanc */
-}
-
-/* Si vous avez des boutons ou liens spécifiques avec d'autres couleurs, vous pouvez les ajuster */
-.btn {
-    color: white; /* Assurez-vous que les boutons aient également un texte blanc */
 }
 
 /* Si vous utilisez des liens et que vous voulez qu'ils apparaissent en blanc aussi */
@@ -146,3 +167,9 @@ th i {
     color: white; /* Couleur des icônes de tri en blanc */
 }
 
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
