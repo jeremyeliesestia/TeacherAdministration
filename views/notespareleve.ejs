@@ -42,8 +42,11 @@
         <!-- Bouton pour exporter le tableau en PDF -->
         <% if (selectedStudent) { %>
         <form action="/exportPdf" method="POST" style="display: inline;">
-            <input type="hidden" name="student_id" value="<%= selectedStudent %>">
-            <button type="submit" class="btn-grad">Exporter en PDF</button>
+            <!-- Boutons -->
+            <div class="btn-group-vertical">
+                <input type="hidden" name="student_id" value="<%= selectedStudent %>">
+                <button type="submit" class="btn-grad">Exporter en PDF</button>
+            </div>
         </form>
         <% } %>
 

@@ -19,6 +19,8 @@ body {
     color: white; /* Couleur du texte sur le fond pour la lisibilité */
 }
 
+
+
 /* Conteneur principal qui utilise Flexbox pour séparer les sections */
 .page-container {
     display: flex;                 /* Flexbox pour aligner les deux sections en ligne */
