@@ -17,6 +17,7 @@ body {
     min-height: 100vh; /* S'assure que le body prend toute la hauteur de la page visible */
     margin: 0; /* Supprime les marges par défaut */
     color: white; /* Couleur du texte sur le fond pour la lisibilité */
+    overflow-x: hidden; /* Empêche le défilement horizontal */
 }
 
 
