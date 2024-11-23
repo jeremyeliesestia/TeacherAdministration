@@ -3,3 +3,6 @@ node_modules/
 
 # Ignore le fichier students.db
 students.db
+
+# Ignore le fichier de generation du MCD
+dbchart.dbml

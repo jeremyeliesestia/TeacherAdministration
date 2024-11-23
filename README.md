@@ -53,6 +53,9 @@ Teacher Administration is a web application designed to help teachers manage stu
 
 ## Database
 
+![Database Schema](public/dbchart.jpg)
+
+
 The application uses SQLite for data storage. The database schema includes the following tables:
 
 - `student`
