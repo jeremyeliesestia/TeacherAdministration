@@ -1,12 +1,15 @@
 const express = require('express');
 const db = require('./database'); // Importation de la base de données
 const app = express();
+const path = require('path');
 const port = 3000;
 const fs = require("fs");
+const favicon = require('serve-favicon');
 const PDFDocument = require('pdfkit-table');
 const { title } = require('process');
 
 // Middleware pour traiter les données du formulaire POST
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
@@ -18,7 +21,6 @@ app.get('/', (req, res) => {
   // Rendre la vue home sans récupérer de données
   res.render('home'); // Simplement rendre la page d'accueil
 });
-
 
 // Route pour afficher la liste des étudiants
 app.get('/students', (req, res) => {
