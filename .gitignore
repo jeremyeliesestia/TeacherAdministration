@@ -1,0 +1,5 @@
+# Ignore le dossier node_modules
+node_modules/
+
+# Ignore le fichier students.db
+students.db
