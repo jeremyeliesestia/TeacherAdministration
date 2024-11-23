@@ -39,22 +39,25 @@
             </div>
         </form>
 
-        <!-- Bouton pour exporter le tableau en PDF -->
-        <% if (selectedStudent) { %>
-        <form action="/exportPdf" method="POST" style="display: inline;">
-            <!-- Boutons -->
-            <div class="btn-group-vertical">
-                <input type="hidden" name="student_id" value="<%= selectedStudent %>">
-                <button type="submit" class="btn-grad">Exporter en PDF</button>
-            </div>
-        </form>
-        <% } %>
 
-        <!-- Bouton de retour à l'accueil -->
-        <a href="/" class="btn-grad">Retour à l'accueil</a>
+        <div class="btn-group-vertical">
+            <!-- Bouton pour exporter le tableau en PDF -->
+            <% if (selectedStudent) { %>
+            <form action="/exportPdf" method="POST" style="display: inline;">
+                <!-- Boutons -->
+                <div class="btn-group-vertical">
+                    <input type="hidden" name="student_id" value="<%= selectedStudent %>">
+                    <button type="submit" class="btn-grad">Exporter en PDF</button>
+                </div>
+            </form>
+            <% } %>
+
+            <!-- Bouton de retour à l'accueil -->
+            <a href="/" class="btn-grad">Retour à l'accueil</a>
+        </div>
 
         <!-- Tableau pour afficher les compétences -->
-        <div id="competence-table" class="mt-4">
+        <div id="competence-table" class="table mt-4">
             <table class="table table-striped">
                 <thead>
                     <tr>
