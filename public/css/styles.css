@@ -196,3 +196,53 @@ th i {
     -ms-flex-pack: center;
     justify-content: center;
 }
+
+/* Media Queries for Responsive Design */
+@media (max-width: 768px) {
+    .page-container {
+        flex-direction: column; /* Stack sections vertically on small screens */
+    }
+
+    .left-section, .right-section {
+        flex: 1 1 100%; /* Make sections full width on small screens */
+        text-align: center; /* Center text on small screens */
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 2.5rem; /* Smaller font size for H1 on small screens */
+    }
+
+    h2 {
+        text-align: center;
+    }
+
+    .btn-grad {
+        font-size: 15px; /* Adjust font size for buttons on small screens */
+        width: 150px;
+    }
+
+    .container {
+        padding: 0 15px; /* Add padding to container on small screens */
+    }
+
+    .form-group {
+        width: 50%; /* Full width form groups on small screens */;
+        /*Center on screen*/
+        margin: 0 auto;
+        float: none;
+    }
+
+    .table {
+        width: 100%; /* Full width tables on small screens */
+    }
+
+    .btn-group-vertical {
+        width: 100%; /* Full width button group on small screens */
+        justify-content: center;
+    }
+    
+}
+
+
+
