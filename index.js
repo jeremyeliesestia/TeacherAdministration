@@ -442,12 +442,6 @@ function getLevelColor(niveau) {
   return colors[niveau] || 'black'; // Couleur par défaut
 }
 
-// Démarrer le serveur
-// app.listen(3000, () => {
-//   console.log('Server is running on port 3000');
-// });
-
-
 // Démarrer le serveur HTTPS
 const httpsOptions = {
   key: fs.readFileSync(path.join(__dirname, 'certs', 'server.key')),
