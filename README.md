@@ -45,6 +45,17 @@ Teacher Administration is a web application designed to help teachers manage stu
     ```
 3. Open your web browser and navigate to `https://localhost:3000`.
 
+## Node Modules
+
+The project uses the following Node modules:
+
+- **express**: A minimal and flexible Node.js web application framework that provides a robust set of features for web and mobile applications.
+- **ejs**: Embedded JavaScript templates, a simple templating language that lets you generate HTML markup with plain JavaScript.
+- **pdfkit**: A JavaScript PDF generation library for Node and the browser.
+- **pdfkit-table**: A plugin for PDFKit to create tables in PDF documents.
+- **serve-favicon**: A favicon serving middleware for Node.js.
+- **sqlite3**: Asynchronous, non-blocking SQLite3 bindings for Node.js.
+
 ## Routes
 
 - `/` - Home page

@@ -9,3 +9,7 @@ dbchart.dbml
 
 # Ignore le dossier de certificats
 certs/
+
+# Ignore packages
+package-lock.json
+package.json
