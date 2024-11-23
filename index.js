@@ -18,9 +18,15 @@ app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
 // Route pour la page d'accueil 
-app.get('/', (req, res) => {
+app.get('/home', (req, res) => {
   // Rendre la vue home sans récupérer de données
   res.render('home'); // Simplement rendre la page d'accueil
+});
+
+// Route pour la page d'accueil 
+app.get('/', (req, res) => {
+  // Rendre la vue home sans récupérer de données
+  res.render('connexion'); // Simplement rendre la page d'accueil
 });
 
 // Route pour afficher la liste des étudiants

@@ -9,3 +9,6 @@ dbchart.dbml
 
 # Ignore le dossier de certificats
 certs/
+
+# Ignore le dossier profile
+public/profile/

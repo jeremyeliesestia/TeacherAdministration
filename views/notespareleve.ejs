@@ -23,6 +23,17 @@
     </style>
 </head>
 <body>
+      <!-- Header Bar -->
+  <div class="header-bar">
+    <div class="profile">
+      <img src="/favicon.png" alt="Icon">
+      <span class="profile-text">Teacher Administration v1.0</span>
+    </div>
+    <div class="profile">
+      <span href:  class="profile-text">Tiphaine Moureu</span>
+      <a href="/"><img src="/profile/profilepicture.jpg" alt="Profile Picture"></a>
+    </div>
+  </div>
     <div class="container mt-5">
         <h1>Notes par Élève</h1>
 
@@ -33,7 +44,7 @@
                 <select name="student_id" id="student" class="form-control" required onchange="document.getElementById('student-form').submit();">
                     <option value="" disabled selected>Choisissez un étudiant</option>
                     <% students.forEach(student => { %>
-                        <option value="<%= student.id %>" <%= selectedStudent == student.id ? 'selected' : '' %>><%= student.fullname %> (<%= student.classe %>)</option>
+                        <option value="<%= student.id %>" <%= selectedStudent == student.id ? 'selected' : '' %>><%= student.fullname %> <%= student.name %> (<%= student.classe %>)</option>
                     <% }); %>
                 </select>
             </div>
@@ -53,7 +64,7 @@
             <% } %>
 
             <!-- Bouton de retour à l'accueil -->
-            <a href="/" class="btn-grad">Retour à l'accueil</a>
+            <a href="/home" class="btn-grad">Retour</a>
         </div>
 
         <!-- Tableau pour afficher les compétences -->
