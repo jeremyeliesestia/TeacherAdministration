@@ -6,3 +6,6 @@ students.db
 
 # Ignore le fichier de generation du MCD
 dbchart.dbml
+
+# Ignore le dossier de certificats
+certs/

@@ -2,6 +2,7 @@ const express = require('express');
 const db = require('./database'); // Importation de la base de données
 const app = express();
 const path = require('path');
+const https = require('https');
 const port = 3000;
 const fs = require("fs");
 const favicon = require('serve-favicon');
@@ -442,9 +443,18 @@ function getLevelColor(niveau) {
 }
 
 // Démarrer le serveur
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
+// app.listen(3000, () => {
+//   console.log('Server is running on port 3000');
+// });
+
+
+// Démarrer le serveur HTTPS
+const httpsOptions = {
+  key: fs.readFileSync(path.join(__dirname, 'certs', 'server.key')),
+  cert: fs.readFileSync(path.join(__dirname, 'certs', 'server.cert'))
+};
+
+https.createServer(httpsOptions, app).listen(3000, () => {
+  console.log('Server is running on https://localhost:3000');
 });
-
-
 
