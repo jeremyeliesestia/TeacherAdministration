@@ -36,6 +36,15 @@ Teacher Administration is a web application designed to help teachers manage stu
     ```
 2. Open your web browser and navigate to `http://localhost:3000`.
 
+## Launch with HTTPS
+
+1. Ensure you have the necessary SSL certificates (`server.key` and `server.cert`) in the `certs` directory.
+2. Start the server with HTTPS:
+    ```sh
+    node index.js
+    ```
+3. Open your web browser and navigate to `https://localhost:3000`.
+
 ## Routes
 
 - `/` - Home page
@@ -56,7 +65,6 @@ Teacher Administration is a web application designed to help teachers manage stu
 ## Database
 
 ![Database Schema](public/dbchart.jpg)
-
 
 The application uses SQLite for data storage. The database schema includes the following tables:
 
