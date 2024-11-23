@@ -198,7 +198,7 @@ th i {
 }
 
 /* Media Queries for Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 500px) {
     .page-container {
         flex-direction: column; /* Stack sections vertically on small screens */
     }
