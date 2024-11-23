@@ -1,5 +1,7 @@
 # Teacher Administration
 
+![Project Icon](public/favicon.png)
+
 Teacher Administration is a web application designed to help teachers manage students, subjects, domains, and competencies. The application allows teachers to add, view, and delete students, subjects, domains, and competencies. It also provides functionality to assign competencies to students and export student competency reports as PDFs.
 
 ## Features
