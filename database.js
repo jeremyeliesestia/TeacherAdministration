@@ -16,6 +16,8 @@ const db = new sqlite3.Database(dbPath, (err) => {
 // Création des tables
 db.serialize(() => {
 
+  db.run('PRAGMA foreign_keys = ON;');
+
   // Création de la table 'student'
   db.run(`
     CREATE TABLE IF NOT EXISTS student (
