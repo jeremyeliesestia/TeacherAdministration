@@ -4,71 +4,425 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Page d'Accueil</title>
+
+  <!-- CSS externes -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="/css/styles.css"> <!-- Lien vers votre fichier CSS global -->
+  <link rel="stylesheet" href="/css/styles.css">
+  
+
 </head>
 <body>
 
-  <!-- Header Bar -->
-  <div class="header-bar">
-    <div class="profile">
-      <img src="/favicon.png" alt="Icon">
-      <span class="profile-text">Teacher Administration v1.0</span>
-    </div>
-    <div class="profile">
-      <span href:  class="profile-text">Tiphaine Moureu</span>
-      <a href="/"><img src="/profile/profilepicture.jpg" alt="Profile Picture"></a>
-    </div>
-  </div>
-  
-  <!-- Conteneur principal avec Flexbox pour séparer la page en deux parties -->
-  <div class="page-container">
-    
-    <!-- Partie gauche : Texte H1 -->
-    <div class="left-section animate__animated animate__fadeInLeft">
-      <h1>GESTION DES ELEVES ET DES COMPETENCES</h1>
-    </div>
-    
-    <!-- Partie droite : Les boutons avec les h2 -->
-    <div class="right-section animate__animated animate__fadeInRight">
-      
-      <!-- Section de gestion des cours -->
-      <div class="container mt-5">
-        <h2 class="mb-4">GESTION DES COURS</h2>
-        <div class="btn-group-vertical">
-            <a href="/students" class="btn-grad">Étudiants</a>
-        </div>
-        <div class="btn-group-vertical">
-            <a href="/matiere" class="btn-grad">Matières</a>
-        </div>
-        <div class="btn-group-vertical">
-            <a href="/domaine" class="btn-grad">Domaines</a>
-        </div>
-        <div class="btn-group-vertical">
-            <a href="/competence" class="btn-grad">Compétences</a>
-        </div>
+  <!-- Bandeau latéral -->
+  <div class="sidebar collapsed" id="sidebar">
+    <div class="toggle-btn" onclick="toggleSidebar()">☰</div>
+    <a href="/home"><i class="fas fa-home"></i> <span class="link-text">Accueil</span></a>
+    <a href="/students"><i class="fas fa-user-graduate"></i> <span class="link-text">Étudiants</span></a>
+    <hr>
+    <!-- Menu Contrôle Continu -->
+    <div class="menu-group">
+      <a href="#" class="menu-toggle" onclick="toggleMenu('controle')">
+        <i class="fas fa-chalkboard-teacher"></i> <span class="link-text">Contrôle Continu</span>
+      </a>
+      <div class="submenu" id="controle">
+        <a href="/matiere"><i class="fas fa-book"></i> <span class="link-text">Matières</span></a>
+        <a href="/domaine"><i class="fas fa-layer-group"></i> <span class="link-text">Domaines</span></a>
+        <a href="/competence"><i class="fas fa-lightbulb"></i> <span class="link-text">Compétences</span></a>
+        <a href="/assigncompetences"><i class="fas fa-plus-circle"></i> <span class="link-text">Ajouter une note</span></a>
+        <a href="/notespareleve"><i class="fas fa-clipboard-list"></i> <span class="link-text">Notes par élève</span></a>
       </div>
-      
-      <!-- Section d'attribution des notes -->
-      <div class="container mt-5">
-        <h2 class="mb-4">GESTION DES COMPETENCES</h2>
-        <div class="btn-group-vertical">
-            <a href="/assigncompetences" class="btn-grad">Ajouter une note</a>
-        </div>
-        <div class="btn-group-vertical">
-          <a href="/notespareleve" class="btn-grad">Notes par élève</a>
-        </div>
-      </div>
-      
-    </div> <!-- Fin de la section droite -->
-    
-  </div> <!-- Fin du conteneur principal -->
+    </div>
 
-  <!-- Scripts JS de Bootstrap -->
+    <!-- Menu Bilan de Rentrée -->
+    <div class="menu-group">
+      <a href="#" class="menu-toggle" onclick="toggleMenu('bilan')">
+        <i class="fas fa-clipboard-check"></i> <span class="link-text">Bilan de Rentrée</span>
+      </a>
+      <div class="submenu" id="bilan">
+        <a href="/matiereBR"><i class="fas fa-book"></i> <span class="link-text">Matières</span></a>
+        <a href="/domaineBR"><i class="fas fa-layer-group"></i> <span class="link-text">Domaines</span></a>
+        <a href="/competenceBR"><i class="fas fa-lightbulb"></i> <span class="link-text">Compétences</span></a>
+        <a href="/assigncompetencesBR"><i class="fas fa-plus-circle"></i> <span class="link-text">Ajouter une note</span></a>
+        <a href="/notespareleveBR"><i class="fas fa-clipboard-list"></i> <span class="link-text">Notes par élève</span></a>
+      </div>
+    </div>
+    
+    <hr>
+
+    <!-- Footer -->
+  <div class="sidebar-footer">
+    <img src="/favicon.png" alt="Icon">
+    <span class="footer-text link-text">Teacher Administration v2.0</span>
+  </div>
+  </div>
+
+
+  <!-- Contenu principal -->
+  <div class="content" id="mainContent">
+    
+    <!-- Barre de profil -->
+    <div class="header-bar">
+      <div class="header-title">
+        <span class="profile-text">Contrôle Continu - Tableau de bord</span>
+      </div>
+
+      <div class="profile">
+        <span class="profile-text">Tiphaine Moureu</span>
+        <a href="/"><img src="/profile/profilepicture.jpg" alt="Profile Picture"></a>
+      </div>
+    </div>
+
+    <div class="page-container">
+      <div class="chart-container">
+        <h5>Nombre total de notes (toutes matières)</h5>
+        <canvas id="pieGlobal"></canvas>
+      </div>
+
+      <div class="chart-container">
+        <h5>Nombre total de notes par élèves</h5>
+        <canvas id="barGroupedEleves"></canvas>
+      </div>
+
+      <div class="chart-container">
+        <h5>Nombre total de notes par matieres</h5>
+        <canvas id="barGroupedMatieres"></canvas>
+      </div>
+
+      <!-- Tu peux en ajouter un 4e ici pour compléter la 2e ligne -->
+      <div class="chart-container">
+        <h2>Radar chart de niveau par élèves</h2>
+        <select id="eleveSelect" class="form-control mb-2"></select>
+        <canvas id="radarChart"></canvas>
+      </div>
+      
+    </div>
+
+</div>
+
+  <!-- JS Bootstrap -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- JS sidebar -->
+  <script>
+    function toggleSidebar(forceState = null) {
+      const sidebar = document.getElementById('sidebar');
+      const content = document.getElementById('mainContent');
+
+      if (forceState === "open") {
+        sidebar.classList.remove('collapsed');
+        content.classList.remove('collapsed');
+      } else if (forceState === "close") {
+        sidebar.classList.add('collapsed');
+        content.classList.add('collapsed');
+      } else {
+        sidebar.classList.toggle('collapsed');
+        content.classList.toggle('collapsed');
+      }
+    }
+
+    function toggleMenu(id) {
+      const sidebar = document.getElementById('sidebar');
+      const menu = document.getElementById(id);
+      const group = menu.closest('.menu-group');
+
+      // Si la sidebar est fermée, on l'ouvre
+      if (sidebar.classList.contains('collapsed')) {
+        toggleSidebar("open");
+      }
+
+      // Gestion du menu cliqué
+      group.classList.toggle('active');
+    }
+
+    // ✅ Fermer la sidebar en cliquant en dehors
+    document.addEventListener('click', function (event) {
+      const sidebar = document.getElementById('sidebar');
+      const toggleBtn = sidebar.querySelector('.toggle-btn');
+
+      // si la sidebar est ouverte
+      if (!sidebar.classList.contains('collapsed')) {
+        // clique en dehors de la sidebar et pas sur le bouton ☰
+        if (!sidebar.contains(event.target) && event.target !== toggleBtn) {
+          toggleSidebar("close");
+        }
+      }
+    });
+  </script>
+
+  
+
+  <script>
+    // Récupérer les données passées par Node
+    const rawData = <%- JSON.stringify(data) %>;
+    const rawData2 = <%- JSON.stringify(dataEleves) %>; // Nouveau jeu de données
+
+    // 1) Données globales agrégées
+    const globalCounts = { vertFonce: 0, vert: 0, orange: 0, rouge: 0, gris: 0 };
+
+    // 2) Données pour bar chart compétences (VERT-FONCE)
+    const labelsCompetences = [];
+    const vertFonceCompetences = [];
+
+    // 3) Données pour line chart sur la 1ère matière
+    const firstMatiere = rawData.length ? rawData[0].nom_matiere : null;
+    const labelsMatiere = [];
+    const vertFonceMatiere = [];
+    const vertMatiere = [];
+    const orangeMatiere = [];
+    const rougeMatiere = [];
+    const grisMatiere = [];
+
+    // 5) Données pour histogramme par matière
+    const matieresMap = {};
+    rawData.forEach(row => {
+      // Agrégation globale
+      globalCounts.vertFonce += Number(row.nb_vert_fonce);
+      globalCounts.vert += Number(row.nb_vert);
+      globalCounts.orange += Number(row.nb_orange);
+      globalCounts.rouge += Number(row.nb_rouge);
+      globalCounts.gris += Number(row.nb_gris);
+
+      // Pour bar chart compétences
+      labelsCompetences.push(row.nom_competence);
+      vertFonceCompetences.push(Number(row.nb_vert_fonce));
+
+      // Pour line chart sur la 1ère matière
+      if (row.nom_matiere === firstMatiere) {
+        labelsMatiere.push(row.nom_competence);
+        vertFonceMatiere.push(Number(row.nb_vert_fonce));
+        vertMatiere.push(Number(row.nb_vert));
+        orangeMatiere.push(Number(row.nb_orange));
+        rougeMatiere.push(Number(row.nb_rouge));
+        grisMatiere.push(Number(row.nb_gris));
+      }
+
+      // Pour histogramme par matière
+      if (!matieresMap[row.nom_matiere]) {
+        matieresMap[row.nom_matiere] = {
+          vertFonce: 0,
+          vert: 0,
+          orange: 0,
+          rouge: 0,
+          gris: 0
+        };
+      }
+      matieresMap[row.nom_matiere].vertFonce += Number(row.nb_vert_fonce);
+      matieresMap[row.nom_matiere].vert += Number(row.nb_vert);
+      matieresMap[row.nom_matiere].orange += Number(row.nb_orange);
+      matieresMap[row.nom_matiere].rouge += Number(row.nb_rouge);
+      matieresMap[row.nom_matiere].gris += Number(row.nb_gris);
+    });
+
+    // 4) Données par élève pour histogramme groupé (rawData2)
+    const labelsEleves = [];
+    const dataEleveVertFonce = [];
+    const dataEleveVert = [];
+    const dataEleveOrange = [];
+    const dataEleveRouge = [];
+    const dataEleveGris = [];
+
+    console.log(rawData);
+    console.log(rawData2); // Pour vérifier la structure des données
+
+    rawData2.forEach(row => {
+      labelsEleves.push(row.name); // ou row.nom si aliasé ainsi
+      dataEleveVertFonce.push(Number(row.nb_vert_fonce));
+      dataEleveVert.push(Number(row.nb_vert));
+      dataEleveOrange.push(Number(row.nb_orange));
+      dataEleveRouge.push(Number(row.nb_rouge));
+      dataEleveGris.push(Number(row.nb_gris));
+    });
+
+    const eleves = rawData2.map(row => row.name);
+
+    // 5) Préparation des données pour histogramme par matière
+    const labelsMatieres = Object.keys(matieresMap);
+    const dataMatiereVertFonce = labelsMatieres.map(m => matieresMap[m].vertFonce);
+    const dataMatiereVert = labelsMatieres.map(m => matieresMap[m].vert);
+    const dataMatiereOrange = labelsMatieres.map(m => matieresMap[m].orange);
+    const dataMatiereRouge = labelsMatieres.map(m => matieresMap[m].rouge);
+    const dataMatiereGris = labelsMatieres.map(m => matieresMap[m].gris);
+
+    // 1) Pie chart global
+    new Chart(document.getElementById('pieGlobal').getContext('2d'), {
+      type: 'doughnut',
+      data: {
+      labels: ['', '', '', '', ''],
+      datasets: [{
+        label: 'Répartition globale',
+        data: [
+        globalCounts.vertFonce,
+        globalCounts.vert,
+        globalCounts.orange,
+        globalCounts.rouge,
+        globalCounts.gris
+        ],
+        backgroundColor: ['#60872D', '#CAFF76', '#FFBA6B', '#FF8C8C', '#DADADA'],
+        borderWidth: 0 // Remove white contouring
+      }]
+      },
+      options: {
+      responsive: true,
+      plugins: {
+        legend: {
+        labels: { color: '#fff' }
+        }
+      }
+      }
+    });
+
+    // 2) Histogramme groupé
+    new Chart(document.getElementById('barGroupedEleves').getContext('2d'), {
+      type: 'bar',
+      data: {
+      labels: labelsEleves,
+      datasets: [
+        { label: '', data: dataEleveVertFonce, backgroundColor: '#60872D' },
+        { label: '', data: dataEleveVert, backgroundColor: '#CAFF76' },
+        { label: '', data: dataEleveOrange, backgroundColor: '#FFBA6B' },
+        { label: '', data: dataEleveRouge, backgroundColor: '#FF8C8C' },
+        { label: '', data: dataEleveGris, backgroundColor: '#DADADA' }
+      ]
+      },
+      options: {
+      responsive: true,
+      plugins: {
+        legend: { 
+        position: 'top',
+        labels: { color: '#fff' }
+        }
+      },
+      scales: {
+        x: {
+        stacked: false,
+        title: { display: true, text: 'Élèves', color: '#fff' },
+        ticks: { maxRotation: 90, minRotation: 45, color: '#fff' }
+        },
+        y: {
+        beginAtZero: true,
+        title: { display: true, text: 'Nombre de compétences', color: '#fff' },
+        ticks: { color: '#fff' }
+        }
+      }
+      }
+    });
+
+    // 3) Histogramme groupé par matière (horizontal)
+    // Ajoute un canvas dans le HTML avec id="barGroupedMatieres"
+    // (Assure-toi d'ajouter <canvas id="barGroupedMatieres"></canvas> dans la page)
+    if (document.getElementById('barGroupedMatieres')) {
+      new Chart(document.getElementById('barGroupedMatieres').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: labelsMatieres,
+        datasets: [
+        { label: '', data: dataMatiereVertFonce, backgroundColor: '#60872D', barThickness: 15 },
+        { label: '', data: dataMatiereVert, backgroundColor: '#CAFF76', barThickness: 15 },
+        { label: '', data: dataMatiereOrange, backgroundColor: '#FFBA6B', barThickness: 15 },
+        { label: '', data: dataMatiereRouge, backgroundColor: '#FF8C8C', barThickness: 15 },
+        { label: '', data: dataMatiereGris, backgroundColor: '#DADADA', barThickness: 15 }
+        ]
+      },
+      options: {
+        indexAxis: 'y', // Make the bar chart horizontal
+        responsive: true,
+        plugins: {
+        legend: {
+          position: 'top',
+          labels: { color: '#fff' }
+        }
+        },
+        scales: {
+        x: {
+          beginAtZero: true,
+          title: { display: true, text: 'Nombre', color: '#fff' },
+          ticks: { color: '#fff' }
+        },
+        y: {
+          stacked: false,
+          title: { display: true, text: 'Matières', color: '#fff' },
+          ticks: { color: '#fff' }
+        }
+        }
+      }
+      });
+    }
+
+
+    function calculerScoresMoyens(nomEleve) {
+      // Creer un dictionnaire avec toutes la matieres existantes issues de rawData2
+      const matieres = {};
+      rawData2.forEach(row => {
+        if (row.name === nomEleve) {
+          if (!matieres[row.nom_matiere]) {
+        matieres[row.nom_matiere] = {
+          vertFonce: 0,
+          vert: 0,
+          orange: 0,
+          rouge: 0,
+          gris: 0,
+          count: 0
+        };
+          }
+          matieres[row.nom_matiere].vertFonce += Number(row.nb_vert_fonce);
+          matieres[row.nom_matiere].vert += Number(row.nb_vert);
+          matieres[row.nom_matiere].orange += Number(row.nb_orange);
+          matieres[row.nom_matiere].rouge += Number(row.nb_rouge);
+          matieres[row.nom_matiere].gris += Number(row.nb_gris);
+          matieres[row.nom_matiere].count++;
+        }
+      });
+      
+      console.log(matieres);
+
+    }
+
+
+
+
+
+
+
+
+
+    function afficherRadarPour(nomEleve) {
+      
+
+
+    }
+
+
+
+
+
+
+
+    // ajouter tous les noms des élèves dans la liste déroulante
+    const select = document.getElementById('eleveSelect');
+    eleves.forEach(eleve => {
+      const option = document.createElement('option');
+      option.value = eleve;
+      option.textContent = eleve;
+      select.appendChild(option);
+    });
+
+    // Premier élève par défaut
+    if (eleves.length > 0) afficherRadarPour(eleves[0]);
+
+    select.addEventListener('change', () => {
+      const selectedEleve = select.value;
+      // calcul du score moyen pour l'élève sélectionné
+      calculerScoresMoyens(selectedEleve);
+      afficherRadarPour(selectedEleve);
+    });
+
+  </script>
+
+
 </body>
 </html>

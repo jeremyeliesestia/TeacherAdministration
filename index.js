@@ -9,6 +9,7 @@ const favicon = require('serve-favicon');
 const PDFDocument = require('pdfkit-table');
 const { title } = require('process');
 
+
 // Middleware pour traiter les données du formulaire POST
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(express.urlencoded({ extended: true }));
@@ -17,11 +18,60 @@ app.use(express.static('public'));
 // Utiliser EJS comme moteur de templates
 app.set('view engine', 'ejs');
 
-// Route pour la page d'accueil 
 app.get('/home', (req, res) => {
-  // Rendre la vue home sans récupérer de données
-  res.render('home'); // Simplement rendre la page d'accueil
+  const sql1 = `
+    SELECT 
+      c.nom AS nom_competence,
+      d.nom AS nom_domaine,
+      m.nom AS nom_matiere,
+      SUM(CASE WHEN sc.niveau_color = 'VERT-FONCE' THEN 1 ELSE 0 END) AS nb_vert_fonce,
+      SUM(CASE WHEN sc.niveau_color = 'VERT' THEN 1 ELSE 0 END) AS nb_vert,
+      SUM(CASE WHEN sc.niveau_color = 'ORANGE' THEN 1 ELSE 0 END) AS nb_orange,
+      SUM(CASE WHEN sc.niveau_color = 'ROUGE' THEN 1 ELSE 0 END) AS nb_rouge,
+      SUM(CASE WHEN sc.niveau_color = 'GRIS' THEN 1 ELSE 0 END) AS nb_gris
+    FROM student_competence sc
+    JOIN competence c ON sc.competence_id = c.id
+    JOIN domaine d ON c.domaine_id = d.id
+    JOIN matiere m ON d.matiere_id = m.id
+    GROUP BY c.nom, d.nom, m.nom
+    ORDER BY nb_vert_fonce DESC, nb_vert DESC, nb_orange DESC, nb_rouge DESC, nb_gris DESC;
+  `;
+
+  const sql2 = `
+    SELECT 
+      s.fullname AS name,
+      SUM(CASE WHEN sc.niveau_color = 'VERT-FONCE' THEN 1 ELSE 0 END) AS nb_vert_fonce,
+      SUM(CASE WHEN sc.niveau_color = 'VERT' THEN 1 ELSE 0 END) AS nb_vert,
+      SUM(CASE WHEN sc.niveau_color = 'ORANGE' THEN 1 ELSE 0 END) AS nb_orange,
+      SUM(CASE WHEN sc.niveau_color = 'ROUGE' THEN 1 ELSE 0 END) AS nb_rouge,
+      SUM(CASE WHEN sc.niveau_color = 'GRIS' THEN 1 ELSE 0 END) AS nb_gris
+    FROM student_competence sc
+    JOIN student s ON sc.student_id = s.id
+    GROUP BY s.name
+    ORDER BY s.name;
+  `;
+
+  db.all(sql1, [], (err, rows1) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+
+    db.all(sql2, [], (err2, rows2) => {
+      if (err2) {
+        return res.status(500).json({ error: err2.message });
+      }
+
+      // ✅ On passe les deux résultats à la vue
+      res.render('home', { data: rows1, dataEleves: rows2 });
+    });
+  });
 });
+
+
+// app.get('/home', (req, res) => {
+//   // Rendre la vue home sans récupérer de données
+//   res.render('home'); // Simplement rendre la page d'accueil
+// });
 
 // Route pour la page d'accueil 
 app.get('/', (req, res) => {
@@ -75,6 +125,23 @@ app.post('/addmatiere', (req, res) => {
   });
 });
 
+// Route pour ajouter une matière
+app.get('/addmatiereBR', (req, res) => {
+  res.render('addmatiereBR'); // Affiche le formulaire pour ajouter une matière
+});
+
+app.post('/addmatiereBR', (req, res) => {
+  const { nom } = req.body;
+  const sql = `INSERT INTO matiereBR (nom) VALUES (?)`;
+
+  db.run(sql, [nom], (err) => {
+    if (err) {
+      return res.status(500).send('Erreur lors de l\'ajout de la matière');
+    }
+    res.redirect('/matiereBR'); // Redirige vers la liste des matières
+  });
+});
+
 // Route pour afficher la liste des matières
 app.get('/matiere', (req, res) => {
   const sql = 'SELECT * FROM matiere';
@@ -83,6 +150,17 @@ app.get('/matiere', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     res.render('matiere', { matieres: rows });
+  });
+});
+
+// Route pour afficher la liste des matières
+app.get('/matiereBR', (req, res) => {
+  const sql = 'SELECT * FROM matiereBR';
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.render('matiereBR', { matieres: rows });
   });
 });
 
@@ -97,6 +175,17 @@ app.get('/adddomaine', (req, res) => {
   });
 });
 
+// Route pour ajouter un domaine
+app.get('/adddomaineBR', (req, res) => {
+  // Récupérer les matières pour le formulaire
+  db.all('SELECT * FROM matiereBR', [], (err, rows) => {
+    if (err) {
+      return res.status(500).send('Erreur lors de la récupération des matières');
+    }
+    res.render('adddomaineBR', { matieres: rows }); // Affiche le formulaire pour ajouter un domaine
+  });
+});
+
 app.post('/adddomaine', (req, res) => {
   const { nom, matiere_id } = req.body;
   const sql = `INSERT INTO domaine (nom, matiere_id) VALUES (?, ?)`;
@@ -106,6 +195,18 @@ app.post('/adddomaine', (req, res) => {
       return res.status(500).send('Erreur lors de l\'ajout du domaine');
     }
     res.redirect('/domaine'); // Redirige vers la liste des domaines
+  });
+});
+
+app.post('/adddomaineBR', (req, res) => {
+  const { nom, matiere_id } = req.body;
+  const sql = `INSERT INTO domaineBR (nom, matiereBR_id) VALUES (?, ?)`;
+
+  db.run(sql, [nom, matiere_id], (err) => {
+    if (err) {
+      return res.status(500).send('Erreur lors de l\'ajout du domaine');
+    }
+    res.redirect('/domaineBR'); // Redirige vers la liste des domaines
   });
 });
 
@@ -124,6 +225,21 @@ app.get('/domaine', (req, res) => {
   });
 });
 
+// Route pour afficher la liste des domaines
+app.get('/domaineBR', (req, res) => {
+  const sql = `
+    SELECT domaineBR.*, matiereBR.nom AS matiere_nom 
+    FROM domaineBR 
+    JOIN matiereBR ON domaineBR.matiereBR_id = matiereBR.id
+  `;
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.render('domaineBR', { domaines: rows });
+  });
+});
+
 // Route pour ajouter une compétence
 app.get('/addcompetence', (req, res) => {
   // Récupérer les domaines pour le formulaire
@@ -132,6 +248,17 @@ app.get('/addcompetence', (req, res) => {
       return res.status(500).send('Erreur lors de la récupération des domaines');
     }
     res.render('addcompetence', { domaines: rows }); // Affiche le formulaire pour ajouter une compétence
+  });
+});
+
+// Route pour ajouter une compétence
+app.get('/addcompetenceBR', (req, res) => {
+  // Récupérer les domaines pour le formulaire
+  db.all('SELECT * FROM domaineBR', [], (err, rows) => {
+    if (err) {
+      return res.status(500).send('Erreur lors de la récupération des domaines');
+    }
+    res.render('addcompetenceBR', { domaines: rows }); // Affiche le formulaire pour ajouter une compétence
   });
 });
 
@@ -147,6 +274,18 @@ app.post('/addcompetence', (req, res) => {
   });
 });
 
+app.post('/addcompetenceBR', (req, res) => {
+  const { nom, domaine_id } = req.body;
+  const sql = `INSERT INTO competenceBR (nom, domaineBR_id) VALUES (?, ?)`;
+
+  db.run(sql, [nom, domaine_id], (err) => {
+    if (err) {
+      return res.status(500).send('Erreur lors de l\'ajout de la compétence');
+    }
+    res.redirect('/competenceBR'); // Redirige vers la liste des compétences
+  });
+});
+
 // Route pour afficher la liste des compétences
 app.get('/competence', (req, res) => {
   const sql = `
@@ -159,6 +298,21 @@ app.get('/competence', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     res.render('competence', { competences: rows });
+  });
+});
+
+// Route pour afficher la liste des compétences
+app.get('/competenceBR', (req, res) => {
+  const sql = `
+    SELECT competenceBR.*, domaineBR.nom AS domaine_nom 
+    FROM competenceBR 
+    JOIN domaineBR ON competenceBR.domaineBR_id = domaineBR.id
+  `;
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.render('competenceBR', { competences: rows });
   });
 });
 
@@ -194,6 +348,38 @@ app.get('/assigncompetences', (req, res) => {
   });
 });
 
+// Route pour afficher le formulaire d'association des compétences à un étudiant
+app.get('/assigncompetencesBR', (req, res) => {
+  // Récupérer les étudiants
+  const sqlStudents = 'SELECT * FROM student';
+
+  // Récupérer les compétences avec les matières et domaines associés
+  const sqlCompetences = `
+    SELECT competenceBR.id AS competence_id, competenceBR.nom AS competence_nom, 
+           domaineBR.nom AS domaine_nom, 
+           matiereBR.nom AS matiere_nom
+    FROM competenceBR
+    LEFT JOIN domaineBR ON competenceBR.domaineBR_id = domaineBR.id
+    LEFT JOIN matiereBR ON domaineBR.matiereBR_id = matiereBR.id
+  `;
+  
+  // Exécuter les deux requêtes
+  db.all(sqlStudents, [], (err, students) => {
+    if (err) {
+      return res.status(500).send('Erreur lors de la récupération des étudiants');
+    }
+    
+    db.all(sqlCompetences, [], (err, competences) => {
+      if (err) {
+        return res.status(500).send('Erreur lors de la récupération des compétences');
+      }
+
+      // Rendre la vue assigncompetences.ejs avec les étudiants et les compétences
+      res.render('assigncompetencesBR', { students, competences });
+    });
+  });
+});
+
 app.post('/assigncompetences', (req, res) => {
   const { student_id, competence_ids, competence_levels } = req.body;
 
@@ -207,6 +393,46 @@ app.post('/assigncompetences', (req, res) => {
 
   // SQL pour insérer la nouvelle compétence avec le niveau correspondant
   const insertSql = `INSERT INTO student_competence (student_id, competence_id, niveau_color) VALUES (?, ?, ?)`;
+
+  // Utiliser une transaction pour garantir la cohérence des données
+  db.serialize(() => {
+    for (let i = 0; i < competence_ids.length; i++) {
+      const competence_id = competence_ids[i];
+      const niveau_color = competence_levels[i];
+
+      // Étape 1 : Supprimer l'enregistrement existant pour cette compétence et cet élève
+      db.run(deleteSql, [student_id, competence_id], (err) => {
+        if (err) {
+          return res.status(500).send('Erreur lors de la suppression des compétences existantes');
+        }
+
+        // Étape 2 : Insérer la nouvelle compétence
+        db.run(insertSql, [student_id, competence_id, niveau_color], (err) => {
+          if (err) {
+            return res.status(500).send('Erreur lors de l\'assignation des compétences');
+          }
+        });
+      });
+    }
+  });
+
+  // Une fois toutes les opérations terminées, rediriger vers la liste des étudiants
+  res.redirect('/students');
+});
+
+app.post('/assigncompetencesBR', (req, res) => {
+  const { student_id, competence_ids, competence_levels } = req.body;
+
+  // Vérifier que des compétences ont été sélectionnées
+  if (!competence_ids || !competence_levels || competence_ids.length !== competence_levels.length) {
+    return res.status(400).send('Veuillez sélectionner au moins une compétence et un niveau associé.');
+  }
+
+  // SQL pour supprimer les compétences existantes pour cet élève et la compétence correspondante
+  const deleteSql = `DELETE FROM student_competenceBR WHERE student_id = ? AND competence_id = ?`;
+
+  // SQL pour insérer la nouvelle compétence avec le niveau correspondant
+  const insertSql = `INSERT INTO student_competenceBR (student_id, competence_id, niveau_color) VALUES (?, ?, ?)`;
 
   // Utiliser une transaction pour garantir la cohérence des données
   db.serialize(() => {
@@ -263,6 +489,21 @@ app.post('/deletematiere/:id', (req, res) => {
   });
 });
 
+app.post('/deletematiereBR/:id', (req, res) => {
+  const matiereId = req.params.id;
+
+  // Suppression en cascade grâce à la contrainte ON DELETE CASCADE
+  const sql = `DELETE FROM matiereBR WHERE id = ?`;
+
+  db.run(sql, matiereId, function(err) {
+    if (err) {
+      console.error('Erreur lors de la suppression de la matière:', err);
+      return res.status(500).send('Erreur lors de la suppression.');
+    }
+    res.redirect('/matiereBR'); // Rediriger vers la liste des matières après suppression
+  });
+});
+
 
 app.post('/deletedomaine/:id', (req, res) => {
   const domaineId = req.params.id;
@@ -275,6 +516,20 @@ app.post('/deletedomaine/:id', (req, res) => {
       return res.status(500).send('Erreur lors de la suppression.');
     }
     res.redirect('/domaine'); // Rediriger vers la liste des domaines après suppression
+  });
+});
+
+app.post('/deletedomaineBR/:id', (req, res) => {
+  const domaineId = req.params.id;
+
+  const sql = `DELETE FROM domaineBR WHERE id = ?`;
+
+  db.run(sql, domaineId, function(err) {
+    if (err) {
+      console.error('Erreur lors de la suppression du domaine:', err);
+      return res.status(500).send('Erreur lors de la suppression.');
+    }
+    res.redirect('/domaineBR'); // Rediriger vers la liste des domaines après suppression
   });
 });
 
@@ -292,6 +547,20 @@ app.post('/deletecompetence/:id', (req, res) => {
   });
 });
 
+app.post('/deletecompetenceBR/:id', (req, res) => {
+  const competenceId = req.params.id;
+
+  const sql = `DELETE FROM competenceBR WHERE id = ?`;
+
+  db.run(sql, competenceId, function(err) {
+    if (err) {
+      console.error('Erreur lors de la suppression de la compétence:', err);
+      return res.status(500).send('Erreur lors de la suppression.');
+    }
+    res.redirect('/competenceBR'); // Rediriger vers la liste des compétences après suppression
+  });
+});
+
 // Route pour afficher les notes par élève
 app.get('/notespareleve', (req, res) => {
   // Récupérer la liste des étudiants
@@ -304,6 +573,21 @@ app.get('/notespareleve', (req, res) => {
 
     // Si aucun étudiant n'est sélectionné au départ, on affiche uniquement la liste déroulante
     res.render('notespareleve', { students, selectedStudent: null, competences: [] });
+  });
+});
+
+// Route pour afficher les notes par élève
+app.get('/notespareleveBR', (req, res) => {
+  // Récupérer la liste des étudiants
+  const sqlStudents = 'SELECT * FROM student';
+  
+  db.all(sqlStudents, [], (err, students) => {
+    if (err) {
+      return res.status(500).send('Erreur lors de la récupération des étudiants');
+    }
+
+    // Si aucun étudiant n'est sélectionné au départ, on affiche uniquement la liste déroulante
+    res.render('notespareleveBR', { students, selectedStudent: null, competences: [] });
   });
 });
 
@@ -347,11 +631,52 @@ app.post('/getCompetencesByStudent', (req, res) => {
   });
 });
 
+// Route pour récupérer les compétences d'un élève
+app.post('/getCompetencesByStudentBR', (req, res) => {
+  const studentId = req.body.student_id;
+
+  // Requête pour récupérer les compétences, domaines et matières de l'élève
+  const sql = `
+    SELECT 
+      matiereBR.nom AS matiere, 
+      domaineBR.nom AS domaine, 
+      competenceBR.nom AS competence, 
+      student_competenceBR.niveau_color 
+    FROM 
+      student_competenceBR
+    JOIN 
+      competenceBR ON student_competenceBR.competence_id = competenceBR.id
+    JOIN 
+      domaineBR ON competenceBR.domaineBR_id = domaineBR.id
+    JOIN 
+      matiereBR ON domaineBR.matiereBR_id = matiereBR.id
+    WHERE 
+      student_competenceBR.student_id = ?
+  `;
+
+  db.all(sql, [studentId], (err, competences) => {
+    if (err) {
+      return res.status(500).send('Erreur lors de la récupération des compétences');
+    }
+
+    // Récupérer la liste des étudiants pour la vue
+    const sqlStudents = 'SELECT * FROM student';
+    db.all(sqlStudents, [], (err, students) => {
+      if (err) {
+        return res.status(500).send('Erreur lors de la récupération des étudiants');
+      }
+
+      res.render('notespareleveBR', { students, selectedStudent: studentId, competences });
+    });
+  });
+});
+
+
 app.post('/exportPdf', async (req, res) => {
   const studentId = req.body.student_id;
 
   try {
-    // Étape 1: Récupérer les informations de l'élève
+    // 1️ Récupération des infos de l'élève
     const sqlStudent = `SELECT name, fullname FROM student WHERE id = ?`;
     const studentInfo = await new Promise((resolve, reject) => {
       db.get(sqlStudent, [studentId], (err, row) => {
@@ -360,7 +685,7 @@ app.post('/exportPdf', async (req, res) => {
       });
     });
 
-    // Étape 2: Récupérer les compétences
+    // 2️ Récupération des compétences
     const sqlCompetences = `
       SELECT competence.nom AS competence,
              student_competence.niveau_color,
@@ -371,7 +696,7 @@ app.post('/exportPdf', async (req, res) => {
       LEFT JOIN domaine ON competence.domaine_id = domaine.id
       LEFT JOIN matiere ON domaine.matiere_id = matiere.id
       WHERE student_competence.student_id = ?
-      ORDER BY matiere.nom ASC;  // Tri par matière alphabétique
+      ORDER BY matiere.nom ASC;
     `;
 
     const competences = await new Promise((resolve, reject) => {
@@ -381,32 +706,28 @@ app.post('/exportPdf', async (req, res) => {
       });
     });
 
-    // Étape 3: Création du PDF
+    // 3️ Création du document PDF
     const doc = new PDFDocument({ margin: 30, size: 'A4' });
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const fileName = `${studentInfo.name}-${studentInfo.fullname}-${today}.pdf`.replace(/\s+/g, '_');
 
-    // Configuration des en-têtes de réponse pour indiquer que c'est un PDF
-    res.setHeader('Content-Disposition', 'attachment; filename=document.pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
     res.setHeader('Content-Type', 'application/pdf');
-
-    // Pipeliner le document PDF dans la réponse HTTP
     doc.pipe(res);
 
-    // Étape 4: Ajouter le nom et le prénom de l'étudiant en haut du document
+    // 4️ Titre et nom de l’élève
     doc.fontSize(16).text(`Bilan du trimestre`, { align: 'center' });
     doc.fontSize(12).text(`${studentInfo.name} ${studentInfo.fullname}`, { align: 'center' });
 
-    // Étape 5: Grouper les compétences par matière
+    // 5️ Regroupement par matière
     const competencesByMatiere = competences.reduce((acc, comp) => {
-      if (!acc[comp.matiere]) {
-        acc[comp.matiere] = [];
-      }
+      if (!acc[comp.matiere]) acc[comp.matiere] = [];
       acc[comp.matiere].push(comp);
       return acc;
     }, {});
 
-    // Étape 6: Générer un tableau pour chaque matière
+    // 6️ Génération des tableaux par matière
     for (const [matiere, comps] of Object.entries(competencesByMatiere)) {
-      // Préparer les données du tableau pour chaque matière
       const table = {
         headers: [
           { label: 'Domaine', property: 'domaine', valign: 'center', headerColor: '#ff29c6' },
@@ -416,26 +737,171 @@ app.post('/exportPdf', async (req, res) => {
         rows: comps.map(comp => [
           comp.domaine,
           comp.competence,
-          comp.niveau_color
+          ''
         ]),
         title: `Matière : ${matiere}`,
       };
 
-      // Ajouter un espace entre les tableaux
       doc.moveDown();
 
-      // Ajouter le tableau pour la matière au document
-      await doc.table(table, { width: 500 });
+      // 7 Affichage du tableau avec coloration des cellules "Niveau"
+      await doc.table(table, {
+        width: 500,
+        columnsSize: [200, 300, 40],
+        prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
+          if (indexColumn === 2) { // colonne "Niveau"
+            const rawValue = comps[indexRow]?.niveau_color?.toUpperCase(); // on récupère la vraie valeur
+
+            let color = null;
+            switch (rawValue) {
+              case 'VERT-FONCE':
+                color = '#006400';
+                break;
+              case 'VERT':
+                color = '#90EE90';
+                break;
+              case 'ORANGE':
+                color = '#FFA500';
+                break;
+              case 'ROUGE':
+                color = '#FF6347';
+                break;
+              case 'GRIS':
+                color = '#D3D3D3';
+                break;
+            }
+
+            if (color) {
+              doc.addBackground(rectCell, color, 0.5);
+            }
+          }
+        }
+      });
     }
 
-    // Terminer le document après avoir ajouté tous les contenus
-    doc.end(); // Assurez-vous que cela se trouve ici
+    doc.end(); // 8 Clôture du document
 
   } catch (error) {
     console.error(error);
     res.status(500).send('Erreur lors de l\'exportation en PDF');
   }
 });
+
+app.post('/exportPdfBR', async (req, res) => {
+  const studentId = req.body.student_id;
+
+  try {
+    // 1️ Récupération des infos de l'élève
+    const sqlStudent = `SELECT name, fullname FROM student WHERE id = ?`;
+    const studentInfo = await new Promise((resolve, reject) => {
+      db.get(sqlStudent, [studentId], (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    });
+
+    // 2️ Récupération des compétences
+    const sqlCompetences = `
+      SELECT competenceBR.nom AS competence,
+             student_competenceBR.niveau_color,
+             matiereBR.nom AS matiere,
+             domaineBR.nom AS domaine
+      FROM student_competenceBR
+      LEFT JOIN competenceBR ON student_competenceBR.competence_id = competenceBR.id
+      LEFT JOIN domaineBR ON competenceBR.domaineBR_id = domaineBR.id
+      LEFT JOIN matiereBR ON domaineBR.matiereBR_id = matiereBR.id
+      WHERE student_competenceBR.student_id = ?
+      ORDER BY matiereBR.nom ASC;
+    `;
+
+    const competences = await new Promise((resolve, reject) => {
+      db.all(sqlCompetences, [studentId], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+
+    // 3️ Création du document PDF
+    const doc = new PDFDocument({ margin: 30, size: 'A4' });
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const fileName = `${studentInfo.name}-${studentInfo.fullname}-${today}.pdf`.replace(/\s+/g, '_');
+
+    res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+    res.setHeader('Content-Type', 'application/pdf');
+    doc.pipe(res);
+
+    // 4️ Titre et nom de l’élève
+    doc.fontSize(16).text(`Bilan du trimestre`, { align: 'center' });
+    doc.fontSize(12).text(`${studentInfo.name} ${studentInfo.fullname}`, { align: 'center' });
+
+    // 5️ Regroupement par matière
+    const competencesByMatiere = competences.reduce((acc, comp) => {
+      if (!acc[comp.matiere]) acc[comp.matiere] = [];
+      acc[comp.matiere].push(comp);
+      return acc;
+    }, {});
+
+    // 6️ Génération des tableaux par matière
+    for (const [matiere, comps] of Object.entries(competencesByMatiere)) {
+      const table = {
+        headers: [
+          { label: 'Domaine', property: 'domaine', valign: 'center', headerColor: '#ff29c6' },
+          { label: 'Compétence', property: 'competence', valign: 'center', headerColor: '#ff29c6' },
+          { label: 'Niveau', property: 'niveau_color', valign: 'center', headerColor: '#ff29c6' },
+        ],
+        rows: comps.map(comp => [
+          comp.domaine,
+          comp.competence,
+          ''
+        ]),
+        title: `Matière : ${matiere}`,
+      };
+
+      doc.moveDown();
+
+      // 7 Affichage du tableau avec coloration des cellules "Niveau"
+      await doc.table(table, {
+        width: 500,
+        columnsSize: [200, 300, 40],
+        prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
+          if (indexColumn === 2) { // colonne "Niveau"
+            const rawValue = comps[indexRow]?.niveau_color?.toUpperCase(); // on récupère la vraie valeur
+
+            let color = null;
+            switch (rawValue) {
+              case 'VERT-FONCE':
+                color = '#006400';
+                break;
+              case 'VERT':
+                color = '#90EE90';
+                break;
+              case 'ORANGE':
+                color = '#FFA500';
+                break;
+              case 'ROUGE':
+                color = '#FF6347';
+                break;
+              case 'GRIS':
+                color = '#D3D3D3';
+                break;
+            }
+
+            if (color) {
+              doc.addBackground(rectCell, color, 0.5);
+            }
+          }
+        }
+      });
+    }
+
+    doc.end(); // 8 Clôture du document
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erreur lors de l\'exportation en PDF');
+  }
+});
+
 
 
 // Fonction pour obtenir la couleur du niveau

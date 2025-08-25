@@ -38,6 +38,16 @@ db.serialize(() => {
       FOREIGN KEY (competence_id) REFERENCES competence (id) ON DELETE CASCADE
     )`);
 
+  db.run(`
+    CREATE TABLE IF NOT EXISTS student_competenceBR (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      student_id INTEGER,
+      competence_id INTEGER,
+      niveau_color TEXT,
+      FOREIGN KEY (student_id) REFERENCES student (id) ON DELETE CASCADE,
+      FOREIGN KEY (competence_id) REFERENCES competenceBR (id) ON DELETE CASCADE
+    )`);
+
   // Création de la table 'matiere'
   db.run(`
     CREATE TABLE IF NOT EXISTS matiere (
@@ -63,6 +73,34 @@ db.serialize(() => {
       nom TEXT NOT NULL,
       domaine_id INTEGER,
       FOREIGN KEY (domaine_id) REFERENCES domaine(id) ON DELETE CASCADE
+    )
+  `);
+
+  // Création de la table 'matiere'
+  db.run(`
+    CREATE TABLE IF NOT EXISTS matiereBR (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nom TEXT NOT NULL
+    )
+  `);
+
+   // Création de la table 'domaine'
+  db.run(`
+    CREATE TABLE IF NOT EXISTS domaineBR (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nom TEXT NOT NULL,
+      matiereBR_id INTEGER,
+      FOREIGN KEY (matiereBR_id) REFERENCES matiereBR(id) ON DELETE CASCADE
+    )
+  `);
+
+  // Création de la table 'competence'
+  db.run(`
+    CREATE TABLE IF NOT EXISTS competenceBR (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nom TEXT NOT NULL,
+      domaineBR_id INTEGER,
+      FOREIGN KEY (domaineBR_id) REFERENCES domaineBR(id) ON DELETE CASCADE
     )
   `);
 

@@ -9,51 +9,96 @@
   <link rel="stylesheet" href="/css/styles.css"> <!-- Lien vers votre fichier CSS global -->
 </head>
 <body>
+    <!-- Bandeau latéral -->
+  <div class="sidebar collapsed" id="sidebar">
+    <div class="toggle-btn" onclick="toggleSidebar()">☰</div>
+    <a href="/home"><i class="fas fa-home"></i> <span class="link-text">Accueil</span></a>
+    <a href="/students"><i class="fas fa-user-graduate"></i> <span class="link-text">Étudiants</span></a>
+    <hr>
+    <!-- Menu Contrôle Continu -->
+    <div class="menu-group">
+      <a href="#" class="menu-toggle" onclick="toggleMenu('controle')">
+        <i class="fas fa-chalkboard-teacher"></i> <span class="link-text">Contrôle Continu</span>
+      </a>
+      <div class="submenu" id="controle">
+        <a href="/matiere"><i class="fas fa-book"></i> <span class="link-text">Matières</span></a>
+        <a href="/domaine"><i class="fas fa-layer-group"></i> <span class="link-text">Domaines</span></a>
+        <a href="/competence"><i class="fas fa-lightbulb"></i> <span class="link-text">Compétences</span></a>
+        <a href="/assigncompetences"><i class="fas fa-plus-circle"></i> <span class="link-text">Ajouter une note</span></a>
+        <a href="/notespareleve"><i class="fas fa-clipboard-list"></i> <span class="link-text">Notes par élève</span></a>
+      </div>
+    </div>
+
+    <!-- Menu Bilan de Rentrée -->
+    <div class="menu-group">
+      <a href="#" class="menu-toggle" onclick="toggleMenu('bilan')">
+        <i class="fas fa-clipboard-check"></i> <span class="link-text">Bilan de Rentrée</span>
+      </a>
+      <div class="submenu" id="bilan">
+        <a href="/matiereBR"><i class="fas fa-book"></i> <span class="link-text">Matières</span></a>
+        <a href="/domaineBR"><i class="fas fa-layer-group"></i> <span class="link-text">Domaines</span></a>
+        <a href="/competenceBR"><i class="fas fa-lightbulb"></i> <span class="link-text">Compétences</span></a>
+        <a href="/assigncompetencesBR"><i class="fas fa-plus-circle"></i> <span class="link-text">Ajouter une note</span></a>
+        <a href="/notespareleveBR"><i class="fas fa-clipboard-list"></i> <span class="link-text">Notes par élève</span></a>
+      </div>
+    </div>
+    <hr>
+
+    <!-- Footer -->
+  <div class="sidebar-footer">
+    <img src="/favicon.png" alt="Icon">
+    <span class="footer-text link-text">Teacher Administration v2.0</span>
+  </div>
+  </div>
+
+  <div class="content" id="mainContent">
     <!-- Header Bar -->
     <div class="header-bar">
-      <div class="profile">
-        <img src="/favicon.png" alt="Icon">
-        <span class="profile-text">Teacher Administration v1.0</span>
+      <div class="header-title">
+        <span class="profile-text">Contrôle Continu - Liste des matières</span>
       </div>
       <div class="profile">
-        <span href:  class="profile-text">Tiphaine Moureu</span>
+        <span class="profile-text">Tiphaine Moureu</span>
         <a href="/"><img src="/profile/profilepicture.jpg" alt="Profile Picture"></a>
       </div>
     </div>
-  <div class="container mt-5">
-    <h1 class="mb-4">Liste des Matières</h1>
 
-    <!-- Boutons -->
-    <div class="btn-group-vertical">
-      <a href="/addmatiere" class="btn-grad">Nouveau</a>
-      <a href="/home" class="btn-grad">Retour</a>
-    </div>
+    <div class="container mt-5">
+      <h1 class="mb-4">Liste des Matières</h1>
 
-    <!-- Barre de recherche -->
-    <input type="text" id="searchInput" class="form-control mb-3" placeholder="Rechercher une matière...">
+      <!-- Boutons -->
+      <div class="btn-group-vertical">
+        <a href="/addmatiere" class="btn-grad">Nouveau</a>
+        <a href="/home" class="btn-grad">Retour</a>
+      </div>
 
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th onclick="sortTable(0)" style="cursor: pointer;">ID <i class="fas fa-sort"></i></th>
-          <th onclick="sortTable(1)" style="cursor: pointer;">Nom <i class="fas fa-sort"></i></th>
-        </tr>
-      </thead>
-      <tbody id="matiereTableBody">
-        <% matieres.forEach(matiere => { %>
+      <!-- Barre de recherche -->
+      <input type="text" id="searchInput" class="form-control mb-3" placeholder="Rechercher une matière...">
+
+      <table class="table table-striped">
+        <thead>
           <tr>
-            <td><%= matiere.id %></td>
-            <td><%= matiere.nom %></td>
-            <td>
-              <!-- Formulaire pour supprimer une matiere -->
-              <form action="/deletematiere/<%= matiere.id %>" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette matiere ?');">
-                  <button type="submit" class="btn btn-danger">Supprimer</button>
-              </form>
-            </td>
+            <th onclick="sortTable(0)" style="cursor: pointer;">ID <i class="fas fa-sort"></i></th>
+            <th onclick="sortTable(1)" style="cursor: pointer;">Nom <i class="fas fa-sort"></i></th>
+            <th> <i class="fas"></i></th>
           </tr>
-        <% }); %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody id="matiereTableBody">
+          <% matieres.forEach(matiere => { %>
+            <tr>
+              <td><%= matiere.id %></td>
+              <td><%= matiere.nom %></td>
+              <td>
+                <!-- Formulaire pour supprimer une matiere -->
+                <form action="/deletematiere/<%= matiere.id %>" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette matiere ?');">
+                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                </form>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <!-- Scripts JS de Bootstrap -->
@@ -125,6 +170,52 @@
               }
           });
       });
+  </script>
+    <!-- JS sidebar -->
+  <script>
+    function toggleSidebar(forceState = null) {
+      const sidebar = document.getElementById('sidebar');
+      const content = document.getElementById('mainContent');
+
+      if (forceState === "open") {
+        sidebar.classList.remove('collapsed');
+        content.classList.remove('collapsed');
+      } else if (forceState === "close") {
+        sidebar.classList.add('collapsed');
+        content.classList.add('collapsed');
+      } else {
+        sidebar.classList.toggle('collapsed');
+        content.classList.toggle('collapsed');
+      }
+    }
+
+    function toggleMenu(id) {
+      const sidebar = document.getElementById('sidebar');
+      const menu = document.getElementById(id);
+      const group = menu.closest('.menu-group');
+
+      // Si la sidebar est fermée, on l'ouvre
+      if (sidebar.classList.contains('collapsed')) {
+        toggleSidebar("open");
+      }
+
+      // Gestion du menu cliqué
+      group.classList.toggle('active');
+    }
+
+    // ✅ Fermer la sidebar en cliquant en dehors
+    document.addEventListener('click', function (event) {
+      const sidebar = document.getElementById('sidebar');
+      const toggleBtn = sidebar.querySelector('.toggle-btn');
+
+      // si la sidebar est ouverte
+      if (!sidebar.classList.contains('collapsed')) {
+        // clique en dehors de la sidebar et pas sur le bouton ☰
+        if (!sidebar.contains(event.target) && event.target !== toggleBtn) {
+          toggleSidebar("close");
+        }
+      }
+    });
   </script>
 </body>
 </html>

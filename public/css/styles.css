@@ -3,12 +3,12 @@ body {
     /* Dégradé de couleurs superposé à l'image */
     background: linear-gradient(
                     45deg,                    /* Angle du dégradé */
-                    rgba(0, 14, 171, 0.5),    /* Couleur de départ (bleu semi-transparent) */
-                    rgba(136, 13, 185, 0.5),  /* Couleur intermédiaire */
-                    rgba(255, 123, 0, 0.5)    /* Couleur de fin (orange semi-transparent) */
+                    #74276C,    /* Couleur de départ (bleu semi-transparent) */
+                    #C53364,  /* Couleur intermédiaire */
+                    #FD8263    /* Couleur de fin (orange semi-transparent) */
                 ),
                 url('https://source.unsplash.com/random/1920x1080');  /* Image de fond aléatoire */
-    
+
     /* S'assurer que l'image couvre toute la page */
     background-size: cover;
     background-position: center;
@@ -20,13 +20,86 @@ body {
     overflow-x: hidden; /* Empêche le défilement horizontal */
 }
 
+.bodyBR {
+    /* Dégradé de couleurs superposé à l'image */
+    background: linear-gradient(
+                    45deg,                    /* Angle du dégradé */
+                    #574BCD,    /* Couleur de départ (bleu semi-transparent) */
+                    #2999AD,  /* Couleur intermédiaire */
+                    #41E975    /* Couleur de fin (orange semi-transparent) */
+                ),
+                url('https://source.unsplash.com/random/1920x1080');  /* Image de fond aléatoire */
 
+    /* S'assurer que l'image couvre toute la page */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed; /* Fixe l'arrière-plan lors du défilement */
+    min-height: 100vh; /* S'assure que le body prend toute la hauteur de la page visible */
+    margin: 0; /* Supprime les marges par défaut */
+    color: white; /* Couleur du texte sur le fond pour la lisibilité */
+    overflow-x: hidden; /* Empêche le défilement horizontal */
+}
 
-/* Conteneur principal qui utilise Flexbox pour séparer les sections */
 .page-container {
-    display: flex;                 /* Flexbox pour aligner les deux sections en ligne */
-    min-height: 100vh;             /* La page prend toute la hauteur de l'écran visible */
-    width: 100%;                   /* Occupe toute la largeur */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 colonnes */
+  grid-gap: 30px;
+  padding: 20px;
+}
+
+.chart-container {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  /* Centrage du contenu */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chart-container-polar {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+    gap: 20px;
+}
+
+.chart-container-polar > * {
+    flex: 1 1 45%;
+    min-width: 200px;
+    max-width: 48%;
+    margin-bottom: 20px;
+}
+
+
+.chart-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* canvas {
+  width: 50% !important;
+  height: auto !important;
+} */
+
+#pieGlobal {
+  width: 50% !important;   /* largeur plus grande */
+  height: 100% !important;  /* hauteur plus grande */
+}
+
+#barGroupedEleves {
+  width: 100% !important;   /* largeur plus grande */
+  height: 100% !important;  /* hauteur plus grande */
 }
 
 /* Partie gauche (H1) */
@@ -38,7 +111,7 @@ body {
     background-color: rgba(0, 0, 0, 0.25); /* Fond semi-transparent */
     padding: 20px;
 }
-  
+
 /* Partie droite (h2 et boutons) */
 .right-section {
     flex: 1;                       /* La partie droite prend 50% de la largeur */
@@ -60,6 +133,13 @@ h2 {
     text-align: left;              /* Alignement à gauche des H2 */
 }
 
+
+
+
+
+
+
+
 .btn {
     border-radius: 25px;
     margin-bottom: 20px;
@@ -67,7 +147,7 @@ h2 {
 }
 
 .btn-grad {
-    background-image: linear-gradient(to right, rgb(185, 9, 255) 0%, rgb(255, 181, 112) 100%);
+    background-color: rgba(0, 0, 0, 0.25);
     width: 200px;
     padding: 10px 20px;
     text-align: center;
@@ -85,11 +165,32 @@ h2 {
     border-top-width: 0px;
 }
 
-
 .btn-grad:hover {
-    box-shadow: 0 0 15px rgba(255, 255, 255);
+    box-shadow: 0 0 25px rgba(255, 255, 255);
     color: #fff; text-decoration: none; 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* Styles pour les niveaux de compétence */
@@ -183,9 +284,7 @@ th i {
 }
 
 .form-input{
-
     width: 75%;
-
 }
 
 .btn-group-vertical {
@@ -201,53 +300,205 @@ th i {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 10px;
     background-color: rgb(0, 0, 0, 0.5);
     height: 50px;
-  }
-  .profile {
+}
+
+.menu-group .submenu {
+  display: none;
+  padding-left: 10px;
+}
+
+.menu-group .submenu a {
+  font-size: 0.95em;
+}
+
+.menu-group.active .submenu {
+  display: block;
+}
+
+.profile {
     display: flex;
     align-items: center;
-  }
-  .profile img {
+}
+
+.profile img {
     border-radius: 50%;
     width: 40px;
     height: 40px;
     object-fit: cover;
     margin-right: 10px;
     margin-left: 10px;
-  }
-  .profile-text {
+}
+
+.profile-text {
+    padding-left: 15px;
     font-size: 20px;
     color: #ffffff;
     font-weight: bold;
-  }
+}
 
-  .center-content {
+.center-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100vh;
     text-align: center;
-  }
-  .round-image {
+}
+
+.round-image {
     border-radius: 50%;
     width: 200px;
     height: 200px;
     object-fit: cover;
     margin-bottom: 30px;
     transition: transform 0.3s ease; /* Add transition for smooth effect */
-  }
-  
-  .round-image:hover {
+}
+
+.round-image:hover {
     transform: scale(1.1); /* Scale the image to 110% on hover */
-  }
+}
+
+/* Sidebar navigation */
+.sidebar {
+    width: 250px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    position: fixed;
+    height: 100%;
+    transition: width 0.3s ease;
+    overflow-x: hidden;
+    z-index: 1000;
+}
+
+.sidebar.collapsed {
+    width: 60px;
+}
+
+/* Texte caché quand sidebar est repliée, mais icônes visibles */
+.sidebar.collapsed h4 {
+    display: none; /* cacher les titres */
+}
+
+.sidebar.collapsed a {
+    padding-left: 0;
+    padding-right: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-indent: -9999px; /* cache le texte */
+    position: relative;
+    pointer-events: auto; /* liens cliquables */
+    opacity: 1; /* visibles */
+}
+
+/* Icônes centrées et visibles */
+.sidebar.collapsed a i {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-indent: 0;
+    margin: 0;
+    width: auto;
+    min-width: auto;
+}
+
+/* Toggle bouton visible */
+.sidebar.collapsed .toggle-btn {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Lorsque la sidebar est repliée */
+.sidebar.collapsed .sidebar-footer {
+    justify-content: center;
+    padding: 10px 0;
+}
+
+.sidebar.collapsed .sidebar-footer .footer-text {
+    display: none;
+}
+
+/* Styles de la sidebar non repliée */
+.sidebar .toggle-btn {
+    text-align: center;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 24px;
+    color: white;
+}
+
+.sidebar h4 {
+    padding: 10px 20px;
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
+.sidebar a {
+    display: block;
+    padding: 10px 20px;
+    color: white;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.sidebar i {
+    margin-right: 10px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.sidebar a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Contenu décalé selon état de la sidebar */
+.content {
+    margin-left: 250px;
+    transition: margin-left 0.3s ease;
+}
+
+.sidebar.collapsed + .content {
+    margin-left: 60px;
+}
+
+.sidebar-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px 20px;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-footer img {
+    width: 24px;
+    height: 24px;
+}
+
+.polar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  padding: 20px;
+}
+
+.polar-grid canvas {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+}
+
 
 /* Media Queries for Responsive Design */
 @media (max-width: 500px) {
     .page-container {
-        flex-direction: column; /* Stack sections vertically on small screens */
+        grid-template-columns: 1fr;
     }
 
     .left-section, .right-section {
@@ -274,7 +525,7 @@ th i {
     }
 
     .form-group {
-        width: 50%; /* Full width form groups on small screens */;
+        width: 50%; /* Full width form groups on small screens */ ;
         /*Center on screen*/
         margin: 0 auto;
         float: none;
@@ -288,8 +539,6 @@ th i {
         width: 100%; /* Full width button group on small screens */
         justify-content: center;
     }
-    
+
+
 }
-
-
-

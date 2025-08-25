@@ -16,76 +16,120 @@
   </style>
 </head>
 <body>
+    <!-- Bandeau latéral -->
+  <div class="sidebar collapsed" id="sidebar">
+    <div class="toggle-btn" onclick="toggleSidebar()">☰</div>
+    <a href="/home"><i class="fas fa-home"></i> <span class="link-text">Accueil</span></a>
+    <a href="/students"><i class="fas fa-user-graduate"></i> <span class="link-text">Étudiants</span></a>
+    <hr>
+    <!-- Menu Contrôle Continu -->
+    <div class="menu-group">
+      <a href="#" class="menu-toggle" onclick="toggleMenu('controle')">
+        <i class="fas fa-chalkboard-teacher"></i> <span class="link-text">Contrôle Continu</span>
+      </a>
+      <div class="submenu" id="controle">
+        <a href="/matiere"><i class="fas fa-book"></i> <span class="link-text">Matières</span></a>
+        <a href="/domaine"><i class="fas fa-layer-group"></i> <span class="link-text">Domaines</span></a>
+        <a href="/competence"><i class="fas fa-lightbulb"></i> <span class="link-text">Compétences</span></a>
+        <a href="/assigncompetences"><i class="fas fa-plus-circle"></i> <span class="link-text">Ajouter une note</span></a>
+        <a href="/notespareleve"><i class="fas fa-clipboard-list"></i> <span class="link-text">Notes par élève</span></a>
+      </div>
+    </div>
+
+    <!-- Menu Bilan de Rentrée -->
+    <div class="menu-group">
+      <a href="#" class="menu-toggle" onclick="toggleMenu('bilan')">
+        <i class="fas fa-clipboard-check"></i> <span class="link-text">Bilan de Rentrée</span>
+      </a>
+      <div class="submenu" id="bilan">
+        <a href="/matiereBR"><i class="fas fa-book"></i> <span class="link-text">Matières</span></a>
+        <a href="/domaineBR"><i class="fas fa-layer-group"></i> <span class="link-text">Domaines</span></a>
+        <a href="/competenceBR"><i class="fas fa-lightbulb"></i> <span class="link-text">Compétences</span></a>
+        <a href="/assigncompetencesBR"><i class="fas fa-plus-circle"></i> <span class="link-text">Ajouter une note</span></a>
+        <a href="/notespareleveBR"><i class="fas fa-clipboard-list"></i> <span class="link-text">Notes par élève</span></a>
+      </div>
+    </div>
+    <hr>
+
+    <!-- Footer -->
+  <div class="sidebar-footer">
+    <img src="/favicon.png" alt="Icon">
+    <span class="footer-text link-text">Teacher Administration v2.0</span>
+  </div>
+  </div>
+
+  <div class="content" id="mainContent">
     <!-- Header Bar -->
     <div class="header-bar">
-      <div class="profile">
-        <img src="/favicon.png" alt="Icon">
-        <span class="profile-text">Teacher Administration v1.0</span>
+      <div class="header-title">
+        <span class="profile-text">Contrôle Continu - Assigner une compétence</span>
       </div>
       <div class="profile">
-        <span href:  class="profile-text">Tiphaine Moureu</span>
+        <span class="profile-text">Tiphaine Moureu</span>
         <a href="/"><img src="/profile/profilepicture.jpg" alt="Profile Picture"></a>
       </div>
     </div>
-  <div class="container mt-5">
-    <h1 class="mb-4">Assigner des Compétences à un Étudiant</h1>
 
-    <form action="/assigncompetences" method="POST" class="container">
+    <div class="container mt-5">
+      <h1 class="mb-4">Assigner des Compétences à un Étudiant</h1>
 
-      <!-- Boutons -->
-      <div class="btn-group-vertical">
-        <button type="submit" class="btn-grad">Assigner</button>
-        <a href="/home" class="btn-grad">Retour</a>
-      </div>
+      <form action="/assigncompetences" method="POST" class="container">
 
-      <div class="form-group">
-        <label for="student">Sélectionner un étudiant :</label>
-        <select name="student_id" id="student" class="form-control" required>
-          <% students.forEach(student => { %>
-            <option value="<%= student.id %>"><%= student.name %> <%= student.fullname %> (Classe: <%= student.classe %>)</option>
-          <% }); %>
-        </select>
-      </div>
+        <!-- Boutons -->
+        <div class="btn-group-vertical">
+          <button type="submit" class="btn-grad">Assigner</button>
+          <a href="/home" class="btn-grad">Retour</a>
+        </div>
 
-      <!-- Tableau pour afficher les compétences -->
-      <div class="form-group">
-        <label for="competence">Sélectionner des compétences :</label>
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>Selection</th>
-              <th>Matière</th>
-              <th>Domaine</th>
-              <th>Compétence</th>
-              <th>Niveau</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% competences.forEach(competence => { %>
-              <tr>
-                <td>
-                  <input type="checkbox" name="competence_ids[]" value="<%= competence.competence_id %>">
-                </td>
-                <td><%= competence.matiere_nom %></td>
-                <td><%= competence.domaine_nom %></td>
-                <td><%= competence.competence_nom %></td>
-                <td>
-                  <select name="competence_levels[]" class="form-control color-select" onchange="changeColor(this)">
-                    <option value="" disabled selected> </option>
-                    <option value="VERT-FONCE" data-color="VERT-FONCE">VERT FONCÉ</option>
-                    <option value="VERT" data-color="VERT">VERT</option>
-                    <option value="ORANGE" data-color="ORANGE">ORANGE</option>
-                    <option value="ROUGE" data-color="ROUGE">ROUGE</option>
-                    <option value="GRIS" data-color="GRIS">GRIS</option>
-                  </select>
-                </td>
-              </tr>
+        <div class="form-group">
+          <label for="student">Sélectionner un étudiant :</label>
+          <select name="student_id" id="student" class="form-control" required>
+            <% students.forEach(student => { %>
+              <option value="<%= student.id %>"><%= student.name %> <%= student.fullname %> (Classe: <%= student.classe %>)</option>
             <% }); %>
-          </tbody>
-        </table>
-      </div>
-    </form>
+          </select>
+        </div>
 
+        <!-- Tableau pour afficher les compétences -->
+        <div class="form-group">
+          <label for="competence">Sélectionner des compétences :</label>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Selection</th>
+                <th>Matière</th>
+                <th>Domaine</th>
+                <th>Compétence</th>
+                <th>Niveau</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% competences.forEach(competence => { %>
+                <tr>
+                  <td>
+                    <input type="checkbox" name="competence_ids[]" value="<%= competence.competence_id %>">
+                  </td>
+                  <td><%= competence.matiere_nom %></td>
+                  <td><%= competence.domaine_nom %></td>
+                  <td><%= competence.competence_nom %></td>
+                  <td>
+                    <select name="competence_levels[]" class="form-control color-select" onchange="changeColor(this)">
+                      <option value="" disabled selected> </option>
+                      <option value="VERT-FONCE" data-color="VERT-FONCE">VERT FONCÉ</option>
+                      <option value="VERT" data-color="VERT">VERT</option>
+                      <option value="ORANGE" data-color="ORANGE">ORANGE</option>
+                      <option value="ROUGE" data-color="ROUGE">ROUGE</option>
+                      <option value="GRIS" data-color="GRIS">GRIS</option>
+                    </select>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      </form>
+
+    </div>
   </div>
 
   <!-- Scripts JS -->
@@ -120,6 +164,52 @@
           selectElement.style.color = 'black';
       }
     }
+  </script>
+    <!-- JS sidebar -->
+  <script>
+    function toggleSidebar(forceState = null) {
+      const sidebar = document.getElementById('sidebar');
+      const content = document.getElementById('mainContent');
+
+      if (forceState === "open") {
+        sidebar.classList.remove('collapsed');
+        content.classList.remove('collapsed');
+      } else if (forceState === "close") {
+        sidebar.classList.add('collapsed');
+        content.classList.add('collapsed');
+      } else {
+        sidebar.classList.toggle('collapsed');
+        content.classList.toggle('collapsed');
+      }
+    }
+
+    function toggleMenu(id) {
+      const sidebar = document.getElementById('sidebar');
+      const menu = document.getElementById(id);
+      const group = menu.closest('.menu-group');
+
+      // Si la sidebar est fermée, on l'ouvre
+      if (sidebar.classList.contains('collapsed')) {
+        toggleSidebar("open");
+      }
+
+      // Gestion du menu cliqué
+      group.classList.toggle('active');
+    }
+
+    // ✅ Fermer la sidebar en cliquant en dehors
+    document.addEventListener('click', function (event) {
+      const sidebar = document.getElementById('sidebar');
+      const toggleBtn = sidebar.querySelector('.toggle-btn');
+
+      // si la sidebar est ouverte
+      if (!sidebar.classList.contains('collapsed')) {
+        // clique en dehors de la sidebar et pas sur le bouton ☰
+        if (!sidebar.contains(event.target) && event.target !== toggleBtn) {
+          toggleSidebar("close");
+        }
+      }
+    });
   </script>
 </body>
 </html>
