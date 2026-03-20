@@ -62,7 +62,7 @@
 
   <!-- Contenu principal -->
   <div class="content" id="mainContent">
-    
+
     <!-- Barre de profil -->
     <div class="header-bar">
       <div class="header-title">
@@ -93,7 +93,7 @@
 
       <!-- Tu peux en ajouter un 4e ici pour compléter la 2e ligne -->
       <div class="chart-container">
-        <h2>Radar chart de niveau par élèves</h2>
+        <h5>Radar chart de niveau par élèves</h5>
         <select id="eleveSelect" class="form-control mb-2"></select>
         <canvas id="radarChart"></canvas>
       </div>
@@ -154,12 +154,10 @@
     });
   </script>
 
-  
-
   <script>
     // Récupérer les données passées par Node
     const rawData = <%- JSON.stringify(data) %>;
-    const rawData2 = <%- JSON.stringify(dataEleves) %>; // Nouveau jeu de données
+    const rawData2 = <%- JSON.stringify(dataEleves) %>; 
 
     // 1) Données globales agrégées
     const globalCounts = { vertFonce: 0, vert: 0, orange: 0, rouge: 0, gris: 0 };
@@ -220,25 +218,24 @@
 
     // 4) Données par élève pour histogramme groupé (rawData2)
     const labelsEleves = [];
+    const labelsElevesFull = [];
     const dataEleveVertFonce = [];
     const dataEleveVert = [];
     const dataEleveOrange = [];
     const dataEleveRouge = [];
     const dataEleveGris = [];
 
-    console.log(rawData);
-    console.log(rawData2); // Pour vérifier la structure des données
-
     rawData2.forEach(row => {
       labelsEleves.push(row.name); // ou row.nom si aliasé ainsi
+      labelsElevesFull.push(row.fullname);
       dataEleveVertFonce.push(Number(row.nb_vert_fonce));
       dataEleveVert.push(Number(row.nb_vert));
       dataEleveOrange.push(Number(row.nb_orange));
       dataEleveRouge.push(Number(row.nb_rouge));
       dataEleveGris.push(Number(row.nb_gris));
     });
-
-    const eleves = rawData2.map(row => row.name);
+    console.log("Données par élève:", rawData2);
+    const eleves = rawData2.map(row => `${row.fullname} ${row.name}`);
 
     // 5) Préparation des données pour histogramme par matière
     const labelsMatieres = Object.keys(matieresMap);
@@ -268,6 +265,7 @@
       },
       options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
         labels: { color: '#fff' }
@@ -291,6 +289,7 @@
       },
       options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: { 
         position: 'top',
@@ -313,8 +312,6 @@
     });
 
     // 3) Histogramme groupé par matière (horizontal)
-    // Ajoute un canvas dans le HTML avec id="barGroupedMatieres"
-    // (Assure-toi d'ajouter <canvas id="barGroupedMatieres"></canvas> dans la page)
     if (document.getElementById('barGroupedMatieres')) {
       new Chart(document.getElementById('barGroupedMatieres').getContext('2d'), {
       type: 'bar',
@@ -331,6 +328,7 @@
       options: {
         indexAxis: 'y', // Make the bar chart horizontal
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
         legend: {
           position: 'top',
@@ -352,56 +350,9 @@
       }
       });
     }
-
-
-    function calculerScoresMoyens(nomEleve) {
-      // Creer un dictionnaire avec toutes la matieres existantes issues de rawData2
-      const matieres = {};
-      rawData2.forEach(row => {
-        if (row.name === nomEleve) {
-          if (!matieres[row.nom_matiere]) {
-        matieres[row.nom_matiere] = {
-          vertFonce: 0,
-          vert: 0,
-          orange: 0,
-          rouge: 0,
-          gris: 0,
-          count: 0
-        };
-          }
-          matieres[row.nom_matiere].vertFonce += Number(row.nb_vert_fonce);
-          matieres[row.nom_matiere].vert += Number(row.nb_vert);
-          matieres[row.nom_matiere].orange += Number(row.nb_orange);
-          matieres[row.nom_matiere].rouge += Number(row.nb_rouge);
-          matieres[row.nom_matiere].gris += Number(row.nb_gris);
-          matieres[row.nom_matiere].count++;
-        }
-      });
-      
-      console.log(matieres);
-
-    }
-
-
-
-
-
-
-
-
-
-    function afficherRadarPour(nomEleve) {
-      
-
-
-    }
-
-
-
-
-
-
-
+  
+    // 4) Radar chart par élève
+    
     // ajouter tous les noms des élèves dans la liste déroulante
     const select = document.getElementById('eleveSelect');
     eleves.forEach(eleve => {
@@ -410,16 +361,143 @@
       option.textContent = eleve;
       select.appendChild(option);
     });
-
-    // Premier élève par défaut
-    if (eleves.length > 0) afficherRadarPour(eleves[0]);
+    const selectedEleveFirst = select.value;
+    getSQLTableByEleve(selectedEleveFirst);
+    afficherRadarPour(selectedEleveFirst);
 
     select.addEventListener('change', () => {
       const selectedEleve = select.value;
-      // calcul du score moyen pour l'élève sélectionné
-      calculerScoresMoyens(selectedEleve);
+      getSQLTableByEleve(selectedEleve);
       afficherRadarPour(selectedEleve);
     });
+
+    async function getSQLTableByEleve(studentSelected) {
+    try {
+      const response = await fetch(`/api/notes/${encodeURIComponent(studentSelected)}`);
+      if (!response.ok) throw new Error("Erreur serveur: " + response.status);
+      
+      const data = await response.json();
+      console.log("Données reçues:", data);
+      return data;
+    } catch (error) {
+      console.error("Erreur lors de la récupération:", error);
+    }
+  }
+
+    async function afficherRadarPour(studentSelected) {
+      console.log("Afficher radar pour:", studentSelected);
+
+      // 1 Récupérer les données SQL pour l'élève
+      const data = await getSQLTableByEleve(studentSelected);
+      console.log("Structure d'une ligne:", data[0]); // Voir les vrais noms de champs
+      if (!data || data.length === 0) {
+        console.warn("Aucune donnée trouvée pour l'élève", studentSelected);
+        return;
+      }
+
+      // 2️ Table de conversion couleur → score
+      const scoreMap = {
+        "VERT-FONCE": 100,
+        "VERT": 75,
+        "ORANGE": 50,
+        "ROUGE": 25,
+        "GRIS": 0
+      };
+
+      // 3️ Calcul des moyennes par matière
+      const scoresParMatiere = {};
+      data.forEach(row => {
+        const matiere = row.matiere;
+        const score = scoreMap[row.note] ?? 0;
+
+        if (!scoresParMatiere[matiere]) {
+          scoresParMatiere[matiere] = { total: 0, count: 0 };
+        }
+        scoresParMatiere[matiere].total += score;
+        scoresParMatiere[matiere].count += 1;
+      });
+
+      const labels = [];
+      const moyennes = [];
+      for (const matiere in scoresParMatiere) {
+        labels.push(matiere);
+        const { total, count } = scoresParMatiere[matiere];
+        moyennes.push(total / count);
+      }
+
+      // 4️ Supprimer l'ancien radar chart s'il existe
+      if (window.radarChartInstance) {
+        window.radarChartInstance.destroy();
+      }
+
+      // 5️ Créer le radar chart
+      const ctx = document.getElementById("radarChart").getContext("2d");
+      window.radarChartInstance = new Chart(ctx, {
+        type: "radar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: `Scores moyens - ${studentSelected}`,
+            data: moyennes,
+            backgroundColor: "rgba(202, 255, 118, 0.15)",
+            borderColor: "#CAFF76",
+            borderWidth: 2,
+            pointBackgroundColor: "#CAFF76",
+            pointBorderColor: "#60872D",
+            pointBorderWidth: 2,
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            pointHoverBackgroundColor: "#fff",
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            r: {
+              beginAtZero: true,
+              max: 100,
+              ticks: {
+                stepSize: 25,
+                color: "rgba(255,255,255,0.5)",
+                backdropColor: "transparent",
+                font: { size: 10 }
+              },
+              grid: {
+                color: "rgba(255, 255, 255, 0.1)",
+                circular: true           // ← grille circulaire au lieu de polygonale
+              },
+              angleLines: {
+                color: "rgba(255, 255, 255, 0.15)",
+                lineWidth: 1
+              },
+              pointLabels: {
+                color: "#fff",
+                font: { size: 13, weight: "bold" },
+                padding: 10
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false            // ← on supprime la légende, le select suffit
+            },
+            tooltip: {
+              backgroundColor: "rgba(0,0,0,0.7)",
+              titleColor: "#CAFF76",
+              bodyColor: "#fff",
+              borderColor: "#CAFF76",
+              borderWidth: 1,
+              callbacks: {
+                label: (ctx) => ` ${ctx.raw} / 100`
+              }
+            }
+          }
+        }
+      });
+    }
+
+
 
   </script>
 

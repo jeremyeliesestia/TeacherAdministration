@@ -1,4 +1,5 @@
 const express = require('express');
+const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 const db = require('./database'); // Importation de la base de données
 const app = express();
 const path = require('path');
@@ -8,6 +9,7 @@ const fs = require("fs");
 const favicon = require('serve-favicon');
 const PDFDocument = require('pdfkit-table');
 const { title } = require('process');
+const { font } = require('pdfkit');
 
 
 // Middleware pour traiter les données du formulaire POST
@@ -39,7 +41,8 @@ app.get('/home', (req, res) => {
 
   const sql2 = `
     SELECT 
-      s.fullname AS name,
+      s.fullname AS fullname,
+      s.name AS name,
       SUM(CASE WHEN sc.niveau_color = 'VERT-FONCE' THEN 1 ELSE 0 END) AS nb_vert_fonce,
       SUM(CASE WHEN sc.niveau_color = 'VERT' THEN 1 ELSE 0 END) AS nb_vert,
       SUM(CASE WHEN sc.niveau_color = 'ORANGE' THEN 1 ELSE 0 END) AS nb_orange,
@@ -671,6 +674,75 @@ app.post('/getCompetencesByStudentBR', (req, res) => {
   });
 });
 
+async function genererRadarChart(competences) {
+  const scoreMap = {
+    "VERT-FONCE": 100,
+    "VERT": 75,
+    "ORANGE": 50,
+    "ROUGE": 25,
+    "GRIS": 0
+  };
+
+  // Calcul des moyennes par matière
+  const scoresParMatiere = {};
+  competences.forEach(row => {
+    const matiere = row.matiere;
+    const score = scoreMap[row.niveau_color?.toUpperCase()] ?? 0;
+    if (!scoresParMatiere[matiere]) {
+      scoresParMatiere[matiere] = { total: 0, count: 0 };
+    }
+    scoresParMatiere[matiere].total += score;
+    scoresParMatiere[matiere].count += 1;
+  });
+
+  const labels = Object.keys(scoresParMatiere);
+  const moyennes = labels.map(m => scoresParMatiere[m].total / scoresParMatiere[m].count);
+
+  // Génération du canvas
+  const chartCanvas = new ChartJSNodeCanvas({ width: 1000, height: 1000, backgroundColour: '#ffffff' });
+
+  const config = {
+    type: 'radar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Scores moyens',
+        data: moyennes,
+        backgroundColor: 'rgba(202, 255, 118, 0.15)',
+        borderColor: '#CAFF76',
+        borderWidth: 4,
+        pointBackgroundColor: '#CAFF76',
+        pointBorderColor: '#60872D',
+        pointBorderWidth: 3,
+        pointRadius: 8,
+      }]
+    },
+    options: {
+      responsive: false,
+      scales: {
+        r: {
+          beginAtZero: true,
+          max: 100,
+          ticks: {
+            stepSize: 25,
+            color: 'rgba(0,0,0,0.5)',        // ← noir sur blanc
+            backdropColor: 'transparent',
+            font: { size: 20 }  // ← noir sur blanc
+          },
+          grid: { color: 'rgba(0,0,0,0.5)', circular: true },
+          angleLines: { color: 'rgba(0,0,0,0.5)' },
+          pointLabels: { color: 'rgba(0,0,0)', font: { size: 28, weight: 'bold' } }  // ← noir
+        }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  };
+
+  return await chartCanvas.renderToBuffer(config); // retourne un Buffer PNG
+}
+
 
 app.post('/exportPdf', async (req, res) => {
   const studentId = req.body.student_id;
@@ -779,13 +851,25 @@ app.post('/exportPdf', async (req, res) => {
       });
     }
 
-    doc.end(); // 8 Clôture du document
+    // 9️ Génération et ajout du radar chart
+    const radarBuffer = await genererRadarChart(competences);
+
+    doc.moveDown(0.5);
+    doc.fontSize(12).text('Niveau global de l\'élève (sur 100):', { align: 'left' });
+    doc.moveDown(0.3);
+
+    // Centrer l'image sur la page
+    const imageX = doc.page.width / 2 - 125; // 250 (largeur de l'image) / 2
+    doc.image(radarBuffer, imageX, doc.y, { width: 250, height: 250 });
+
+    doc.end();
 
   } catch (error) {
     console.error(error);
     res.status(500).send('Erreur lors de l\'exportation en PDF');
   }
 });
+
 
 app.post('/exportPdfBR', async (req, res) => {
   const studentId = req.body.student_id;
@@ -902,8 +986,6 @@ app.post('/exportPdfBR', async (req, res) => {
   }
 });
 
-
-
 // Fonction pour obtenir la couleur du niveau
 function getLevelColor(niveau) {
   const colors = {
@@ -915,6 +997,34 @@ function getLevelColor(niveau) {
   return colors[niveau] || 'black'; // Couleur par défaut
 }
 
+app.get("/api/notes/:studentSelected", (req, res) => {
+  const studentSelected = req.params.studentSelected; // ex: "Dupont Alice"
+
+  const sql = `
+    SELECT 
+      m.nom   AS matiere,
+      d.nom   AS domaine,
+      c.nom   AS competence,
+      sc.niveau_color AS note
+    FROM student_competence sc
+    JOIN competence c ON sc.competence_id = c.id
+    JOIN domaine d ON c.domaine_id = d.id
+    JOIN matiere m ON d.matiere_id = m.id
+    JOIN student s ON sc.student_id = s.id
+    WHERE (s.fullname || ' ' || s.name) = ?
+  `;
+
+  db.all(sql, [studentSelected], (err, rows) => {
+    if (err) {
+      console.error(err.message);
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows); // renvoie la liste des notes pour l'élève sélectionné
+  });
+});
+
+
 // Démarrer le serveur HTTPS
 const httpsOptions = {
   key: fs.readFileSync(path.join(__dirname, 'certs', 'server.key')),
@@ -924,4 +1034,3 @@ const httpsOptions = {
 https.createServer(httpsOptions, app).listen(3000, () => {
   console.log('Server is running on https://localhost:3000');
 });
-

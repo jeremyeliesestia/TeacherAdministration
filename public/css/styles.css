@@ -494,6 +494,56 @@ th i {
   padding: 20px;
 }
 
+.chart-container {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  height: clamp(300px, 40vw, 500px); /* ← s'adapte à la taille de l'écran */
+  width: 100%;
+}
+
+#pieGlobal {
+  width: 90% !important;
+  height: 90% !important;
+  flex: 1;
+  min-height: 0;
+}
+
+#barGroupedEleves {
+  width: 90% !important;
+  height: 90% !important;
+  flex: 1;
+  min-height: 0;
+}
+
+#barGroupedMatieres {
+  width: 90% !important;
+  height: 90% !important;
+  flex: 1;
+  min-height: 0;
+}
+
+#radarChart {
+  width: 90% !important;
+  height: 90% !important;
+  flex: 1;
+  min-height: 0;
+}
+
+@media (max-width: 900px) {
+  .page-container {
+    grid-template-columns: 1fr; /* ← 1 colonne sur tablette/mobile */
+  }
+
+  .chart-container {
+    height: clamp(250px, 70vw, 400px); /* ← plus petit sur mobile */
+  }
+}
 
 /* Media Queries for Responsive Design */
 @media (max-width: 500px) {
@@ -539,6 +589,28 @@ th i {
         width: 100%; /* Full width button group on small screens */
         justify-content: center;
     }
+
+
+/* Effet de fondu */
+.fade-out {
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+.fade-out.hide {
+  opacity: 0;
+}
+
+/* Effet d’apparition */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.4s forwards;
+}
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
 
 
 }
